@@ -81,6 +81,14 @@ alias ll='ls -l'
 alias lla='ls -al'
 alias llh='ls -hl'
 
+alias po='popd'
+alias p='ps auxww | grep'
+
+alias -g L='| less'
+alias -g G='| grep'
+alias -g H='| head'
+alias -g T='| tail'
+
 #w3mでALC検索
 function alc() {
   if [ $# != 0 ]; then
