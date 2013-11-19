@@ -6,7 +6,7 @@ compinit
 export LANG=ja_JP.UTF-8
 
 # パスの設定
-PATH=/usr/local/bin:/opt/local/sbin:/opt/local/bin:~/bin:$PATH
+PATH=/usr/local/bin:/opt/local/sbin:/opt/local/bin:$HOME/bin:$PATH
 
 #プロンプト
 autoload colors
@@ -17,6 +17,27 @@ PROMPT="
 [%n@${HOST%%.*}]$ "
 
 PROMPT2='[%n]> ' 
+
+#ブランチ情報を右プロンプトに表示
+autoload -Uz vcs_info
+
+#表示フォーマットの指定
+#%b ブランチ情報
+#%a アクション名(mergeなど)
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:*' formats '[%b]'
+zstyle ':vcs_info:*' actionformats '[%b|%a]'
+_update_vcs_info_msg () {
+    psvar=()
+    LANG=en_US.UTF-8 vcs_info
+    [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _update_vcs_info_msg
+
+# バージョン管理されているディレクトリにいれば表示，そうでなければ非表示
+RPROMPT="%1(v|%F{green}%1v%f|)"
 
 #履歴
 #履歴を保存するファイル指定
@@ -76,6 +97,7 @@ linux*)
   ;;
 esac
 
+alias l='ls -l'
 alias la='ls -a'
 alias ll='ls -l'
 alias lla='ls -al'

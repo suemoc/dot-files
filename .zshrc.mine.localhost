@@ -1,0 +1,32 @@
+# for mac
+alias rm='rmtrash'
+
+#=============================
+## source z.sh
+##=============================
+
+if [ -f ~/.zsh/z.sh ]; then
+  _Z_CMD=j
+  source ~/.zsh/z.sh
+  precmd() {
+    _z --add "$(pwd -P)"
+  }
+fi
+
+#=============================
+## source auto-fu.zsh
+##=============================
+
+if [ -f ~/.zsh/auto-fu.zsh ]; then
+  source ~/.zsh/auto-fu.zsh
+  function zle-line-init () {
+    auto-fu-init
+  }
+  zle -N zle-line-init
+  zstyle ':completion:*' completer _oldlist _complete
+  zstyle ':auto-fu:var' autoable-function/skiplines \
+    '(scp|svn) *'
+fi
+
+# rbenv
+eval "$(rbenv init -)"
