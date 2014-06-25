@@ -1,4 +1,4 @@
-# for mac
+# for mba
 alias rm='rmtrash'
 
 #=============================
@@ -25,8 +25,22 @@ if [ -f ~/.zsh/auto-fu.zsh ]; then
   zle -N zle-line-init
   zstyle ':completion:*' completer _oldlist _complete
   zstyle ':auto-fu:var' autoable-function/skiplines \
-    '(scp|svn) *'
+    '(scp|svn|java|mount_smbfs|mount_afp) *'
 fi
 
 # rbenv
 eval "$(rbenv init -)"
+
+# phpenv
+export PATH=$PATH:$HOME/.phpenv/bin
+eval "$(phpenv init -)"
+
+# node
+[[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh
+nvm use default
+npm_dir=${NVM_PATH}_modules
+export NODE_PATH=$npm_dir
+
+# java default version
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.6)
+

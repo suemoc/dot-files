@@ -6,7 +6,7 @@ compinit
 export LANG=ja_JP.UTF-8
 
 # パスの設定
-PATH=/usr/local/bin:/opt/local/sbin:/opt/local/bin:$HOME/bin:$PATH
+PATH=/usr/local/bin:$HOME/bin:$PATH
 
 #プロンプト
 autoload colors
@@ -73,6 +73,8 @@ setopt auto_pushd
 #pushdの履歴は残さない。
 setopt pushd_ignore_dups
 
+export TERM=xterm-256color
+
 #ターミナルのタイトル
 case "${TERM}" in
 kterm*|xterm*)
@@ -111,15 +113,6 @@ alias -g G='| grep'
 alias -g H='| head'
 alias -g T='| tail'
 
-#w3mでALC検索
-function alc() {
-  if [ $# != 0 ]; then
-    w3m "http://eow.alc.co.jp/$*/UTF-8/?ref=sa"
-  else
-    w3m "http://www.alc.co.jp/"
-  fi
-}
-
 #その他
 #キーバインド
 bindkey -e
@@ -128,10 +121,34 @@ bindkey -e
 setopt nobeep
 
 #エディタ
-export EDITOR=vi
+export EDITOR=/usr/bin/vim
 
 #改行のない出力をプロンプトで上書きするのを防ぐ
 unsetopt promptcr
+
+# 関数定義
+# w3mでgoogle検索
+function google() {
+local str opt
+if [ $ != 0 ]; then
+for i in $*; do
+str="$str+$i"
+done
+str=`echo $str | sed 's/^\+//'`
+opt='search?num=50&hl=ja&lr=lang_ja'
+opt="${opt}&q=${str}"
+fi
+w3m http://www.google.co.jp/$opt
+}
+
+# w3mでALC検索
+function alc() {
+if [ $ != 0 ]; then
+w3m "http://eow.alc.co.jp/$*/UTF-8/?ref=sa"
+else
+w3m "http://www.alc.co.jp/"
+fi
+}
 
 #個別設定を読み込む
 [ -f ~/.zshrc.mine ] && source ~/.zshrc.mine
