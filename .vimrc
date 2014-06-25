@@ -1,61 +1,40 @@
- " URL: http://vim.wikia.com/wiki/Example_vimrc
- " Authors: http://vim.wikia.com/wiki/Vim_on_Freenode
- " Description: A minimal, but feature rich, example .vimrc. If you are a
- "              newbie, basing your first .vimrc on this file is a good choice.
- "              If you're a more advanced user, building your own .vimrc based
- "              on this file is still a good idea.
- 
+ " vimrc
+
  "------------------------------------------------------------
- " Features {{{1
- "
- " These options and commands enable some very useful features in Vim, that
- " no user should have to live without.
+ " init
+ "------------------------------------------------------------
  
- " Set 'nocompatible' to ward off unexpected things that your distro might
- " have made, as well as sanely reset options when re-sourcing .vimrc
  " Vi互換モードをオフ（Vimの拡張機能を有効）
  set nocompatible
+
+ " ファイルタイプ自動識別OFF
+ filetype off
+ filetype indent plugin off
+
+ " keymap prefix
+ let g:mapleader = "\<Space>"
  
- " Attempt to determine the type of a file based on its name and possibly its
- " contents.  Use this to allow intelligent auto-indenting for each filetype,
- " and for plugins that are filetype specific.
- " ファイル名と内容によってファイルタイプを判別し、ファイルタイププラグインを有効にする
- filetype indent plugin on
- 
- " Enable syntax highlighting
  " 色づけをオン
- syntax on
- 
+ syntax enable
+
  
  "------------------------------------------------------------
  " Must have options {{{1
- "
- " These are highly recommended options.
  " 強く推奨するオプション
+ "------------------------------------------------------------
  
- " One of the most important options to activate. Allows you to switch from an
- " unsaved buffer without saving it first. Also allows you to keep an undo
- " history for multiple files. Vim will complain if you try to quit without
- " saving, and swap files will keep you safe if your computer crashes.
  " バッファを保存しなくても他のバッファを表示できるようにする
  set hidden
  
- " Better command-line completion
  " コマンドライン補完を便利に
  set wildmenu
  
- " Show partial commands in the last line of the screen
  " タイプ途中のコマンドを画面最下行に表示
  set showcmd
  
- " Highlight searches (use <C-L> to temporarily turn off highlighting; see the
- " mapping of <C-L> below)
  " 検索語を強調表示（<C-L>を押すと現在の強調表示を解除する）
  set hlsearch
  
- " Modelines have historically been a source of security vulnerabilities.  As
- " such, it may be a good idea to disable them and use the securemodelines
- " script, <http://www.vim.org/scripts/script.php?script_id=1876>.
  " 歴史的にモードラインはセキュリティ上の脆弱性になっていたので、
  " オフにして代わりに上記のsecuremodelinesスクリプトを使うとよい。
  " set nomodeline
@@ -63,223 +42,257 @@
  
  "------------------------------------------------------------
  " Usability options {{{1
- "
- " These are options that users frequently set in their .vimrc. Some of them
- " change Vim's behaviour in ways which deviate from the true Vi way, but
- " which are considered to add usability. Which, if any, of these options to
- " use is very much a personal preference, but they are harmless.
+ "------------------------------------------------------------
  
- " Use case insensitive search, except when using capital letters
  " 検索時に大文字・小文字を区別しない。ただし、検索後に大文字小文字が
  " 混在しているときは区別する
  set ignorecase
  set smartcase
  
- " Allow backspacing over autoindent, line breaks and start of insert action
  " オートインデント、改行、インサートモード開始直後にバックスペースキーで
  " 削除できるようにする。
  set backspace=indent,eol,start
  
- " When opening a new line and no filetype-specific indenting is enabled, keep
- " the same indent as the line you're currently on. Useful for READMEs, etc.
  " オートインデント
  " set autoindent
  
- " Stop certain movements from always going to the first character of a line.
- " While this behaviour deviates from that of Vi, it does what most users
- " coming from other editors would expect.
  " 移動コマンドを使ったとき、行頭に移動しない
  set nostartofline
  
- " Display the cursor position on the last line of the screen or in the status
- " line of a window
  " 画面最下行にルーラーを表示する
  set ruler
  
- " Always display the status line, even if only one window is displayed
  " ステータスラインを常に表示する
  set laststatus=2
 
  " ステータスラインの表示フォーマット
- set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
+ " set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
  
- " Instead of failing a command because of unsaved changes, instead raise a
- " dialogue asking if you wish to save changed files.
  " バッファが変更されているとき、コマンドをエラーにするのでなく、保存する
  " かどうか確認を求める
  set confirm
  
- " Use visual bell instead of beeping when doing something wrong
  " ビープの代わりにビジュアルベル（画面フラッシュ）を使う
  set visualbell
  
- " And reset the terminal code for the visual bell.  If visualbell is set, and
- " this line is also included, vim will neither flash nor beep.  If visualbell
- " is unset, this does nothing.
  " そしてビジュアルベルも無効化する
  set t_vb=
  
- " Enable use of the mouse for all modes
  " 全モードでマウスを有効化
  set mouse=a
  
- " Set the command window height to 2 lines, to avoid many cases of having to
- " "press <Enter> to continue"
  " コマンドラインの高さを2行に
  set cmdheight=2
  
- " Display line numbers on the left
  " 行番号を表示
  set number
+
+ " スペース・改行を可視化
+ set list
+ set listchars=tab:»-,trail:-,eol:↲,extends:»,precedes:«,nbsp:%
+
+ " 全角スペース強調
+ augroup highlightDoubleByteSpace
+  autocmd!
+  autocmd VimEnter,Colorscheme * highlight DoubleByteSpace term=underline ctermbg=LightMagenta guibg=LightMagenta
+  autocmd VimEnter,WinEnter,BufRead * match DoubleByteSpace /　/
+ augroup END
  
- " Quickly time out on keycodes, but never time out on mappings
  " キーコードはすぐにタイムアウト。マッピングはタイムアウトしない
  set notimeout ttimeout ttimeoutlen=200
  
- " Use <F11> to toggle between 'paste' and 'nopaste'
  " <F11>キーで'paste'と'nopaste'を切り替える
  set pastetoggle=<F11>
  
+ " color
+ if !has('gui_running')
+   set t_Co=256
+ endif
  
  "------------------------------------------------------------
  " Indentation options {{{1
  " インデント関連のオプション {{{1
- "
- " Indentation settings according to personal preference.
+ "------------------------------------------------------------
  
- " Indentation settings for using 2 spaces instead of tabs.
- " Do not change 'tabstop' from its default value of 8 with this setup.
- " タブ文字の代わりにスペース2個を使う場合の設定。
- " この場合、'tabstop'はデフォルトの8から変えない。
- set shiftwidth=4
- set softtabstop=4
+ " TABをスペースに置換する
  set expandtab
- 
- " Indentation settings for using hard tabs for indent. Display tabs as
- " two characters wide.
- " インデントにハードタブを使う場合の設定。
- " タブ文字を2文字分の幅で表示する。
- "set shiftwidth=2
- "set tabstop=2
- 
+ " 既存のTAB文字をスペース何文字として表示するか
+ set tabstop=2
+ " TABの入力時に置換されるスペースの数
+ set softtabstop=2
+ " インデント時に挿入されるスペースの数
+ set shiftwidth=2
  
  "------------------------------------------------------------
  " Mappings {{{1
  " マッピング
- "
- " Useful mappings
+ "------------------------------------------------------------
  
- " Map Y to act like D and C, i.e. to yank until EOL, rather than act as yy,
- " which is the default
  " Yの動作をDやCと同じにする
  map Y y$
  
- " Map <C-L> (redraw screen) to also turn off search highlighting until the
- " next search
  " <C-L>で検索後の強調表示を解除する
  nnoremap <C-L> :nohl<CR><C-L>
+
+ " edit vimrc
+ nnoremap <Leader>. :<C-u>edit $HOME/.vimrc<CR>
+ " reload vimrc
+ nnoremap <Leader>s. :<C-u>source $HOME/.vimrc<CR>
  
+
  "------------------------------------------------------------
  " ファイルタイプごとの対応
+ "------------------------------------------------------------
+
+ " PHP
  autocmd FileType php,ctp :set dictionary=~/.vim/dict/php.dict
+
  
  "------------------------------------------------------------
-" NeoBundle がインストールされていない時、
-" もしくは、プラグインの初期化に失敗した時の処理
-function! s:WithoutBundles()
-  colorscheme desert
-  " その他の処理
-endfunction
+ " Plugins 
+ "------------------------------------------------------------
 
-" NeoBundle よるプラグインのロードと各プラグインの初期化
-function! s:LoadBundles()
-  " 読み込むプラグインの指定
-  NeoBundle 'Shougo/neobundle.vim'
-  NeoBundle 'tpope/vim-surround'
-  NeoBundle 'Shougo/neocomplcache'
-  " ...
-  " 読み込んだプラグインの設定
-  " ...
-  "" neocomplcache
-  " 補完ウィンドウの設定
-  set completeopt=menuone
+ " NeoBundle がインストールされていない時、
+ " もしくは、プラグインの初期化に失敗した時の処理
+ function! s:WithoutBundles()
+   colorscheme desert
+ endfunction
+
+ " NeoBundle よるプラグインのロードと各プラグインの初期化
+ function! s:LoadBundles()
+   " 読み込むプラグインの指定
+   NeoBundle 'Shougo/neobundle.vim'
+   NeoBundle 'Shougo/neocomplcache'
+   NeoBundle 'Shougo/unite.vim'
+   NeoBundle 'Shougo/neomru.vim'
+   NeoBundle 'Shougo/vimproc.vim'
+   NeoBundle 'Shougo/vimfiler.vim'
+   NeoBundle 'Shougo/vimshell.vim'
+   NeoBundle 'itchyny/lightline.vim'
+   NeoBundle 'tpope/vim-surround'
+   NeoBundle 'altercation/vim-colors-solarized'
+   " ...
+   " 読み込んだプラグインの設定
+   " ...
  
-  " 起動時に有効化
-  let g:neocomplcache_enable_at_startup = 1
+ 
+   "" neocomplcache
+   " 補完ウィンドウの設定
+   set completeopt=menuone
+  
+   " 起動時に有効化
+   let g:neocomplcache_enable_at_startup = 1
+ 
+   " 大文字が入力されるまで大文字小文字の区別を無視する
+   let g:neocomplcache_enable_smart_case = 1
+ 
+   " _(アンダースコア)区切りの補完を有効化
+   let g:neocomplcache_enable_underbar_completion = 1
+ 
+   let g:neocomplcache_enable_camel_case_completion  =  1
+ 
+   " ポップアップメニューで表示される候補の数
+   let g:neocomplcache_max_list = 20
+ 
+   " シンタックスをキャッシュするときの最小文字長
+   let g:neocomplcache_min_syntax_length = 3
+ 
+   " ディクショナリ定義
+   let g:neocomplcache_dictionary_filetype_lists = {
+         \ 'default' : '',
+         \ 'php' : $HOME . '/.vim/dict/php.dict',
+         \ 'ctp' : $HOME . '/.vim/dict/php.dict'
+         \ }
+ 
+   if !exists('g:neocomplcache_keyword_patterns')
+     let g:neocomplcache_keyword_patterns = {}
+   endif
+   let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+ 
+   " スニペットを展開する。スニペットが関係しないところでは行末まで削除
+   imap <expr><C-k> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-o>D"
+   smap <expr><C-k> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-o>D"
+ 
+   " 前回行われた補完をキャンセルします
+   inoremap <expr><C-g> neocomplcache#undo_completion()
+ 
+   " 補完候補のなかから、共通する部分を補完します
+   inoremap <expr><C-l> neocomplcache#complete_common_string()
+ 
+   " 改行で補完ウィンドウを閉じる
+   inoremap <expr><CR> neocomplcache#smart_close_popup() . "\<CR>"
+ 
+   "tabで補完候補の選択を行う
+   inoremap <expr><TAB> pumvisible() ? "\<Down>" : "\<TAB>"
+   inoremap <expr><S-TAB> pumvisible() ? "\<Up>" : "\<S-TAB>"
+ 
+   " <C-h>や<BS>を押したときに確実にポップアップを削除します
+   inoremap <expr><C-h> neocomplcache#smart_close_popup().”\<C-h>”
+ 
+   " 現在選択している候補を確定します
+   inoremap <expr><C-y> neocomplcache#close_popup()
+ 
+   " 現在選択している候補をキャンセルし、ポップアップを閉じます
+   inoremap <expr><C-e> neocomplcache#cancel_popup()
+ 
+   """ unite.vim
+   " start insert mode
+   let g:unite_enable_start_insert=1
+   " unite prefix key
+   nnoremap [unite] <Nop>
+   nmap <Leader>f [unite]
+   " mappings
+   nnoremap [unite]b :<C-u>Unite<Space>buffer<CR>
+   nnoremap [unite]f :<C-u>Unite<Space>file<CR>
+   nnoremap [unite]m :<C-u>Unite<Space>file_mru<CR>
+   nnoremap [unite]a :<C-u>Unite buffer file file_mru bookmark<CR>
+   nnoremap [unite]r :<C-u>Unite<Space>register<CR>
+   nnoremap [unite]R :<C-u>UniteResume<CR>
+ 
+   """ solarized
+   set background=dark
+   colorscheme solarized
+ 
+   """ vimfiler
+   let g:vimfiler_as_default_explorer=1
+   let g:vimfiler_safe_mode_by_default=0
+   " mapping
+   cnoremap ee <C-u>VimFiler<Space>-split<Space>-simple<Space>-winwidth=35<Space>-no-quit
 
-  " 大文字が入力されるまで大文字小文字の区別を無視する
-  let g:neocomplcache_enable_smart_case = 1
+   """ lightline
+   let g:lightline = {
+         \ 'colorscheme': 'solarized',
+         \ }
+ 
+ endfunction
+ 
+ " NeoBundle がインストールされているなら LoadBundles() を呼び出す
+ " そうでないなら WithoutBundles() を呼び出す
+ function! s:InitNeoBundle()
+   if isdirectory(expand("~/.vim/bundle/neobundle.vim/"))
+     filetype plugin indent off
+     if has('vim_starting')
+       set runtimepath+=~/.vim/bundle/neobundle.vim/
+     endif
+     try
+       call neobundle#rc(expand('~/.vim/bundle/'))
+       call s:LoadBundles()
+     catch
+       call s:WithoutBundles()
+     endtry 
+   else
+     call s:WithoutBundles()
+   endif
+ 
+ endfunction
 
-  " _(アンダースコア)区切りの補完を有効化
-  let g:neocomplcache_enable_underbar_completion = 1
+ call s:InitNeoBundle()
 
-  let g:neocomplcache_enable_camel_case_completion  =  1
 
-  " ポップアップメニューで表示される候補の数
-  let g:neocomplcache_max_list = 20
+ "------------------------------------------------------------
+ " 最後に実行する処理
+ "------------------------------------------------------------
 
-  " シンタックスをキャッシュするときの最小文字長
-  let g:neocomplcache_min_syntax_length = 3
-
-  " ディクショナリ定義
-  let g:neocomplcache_dictionary_filetype_lists = {
-        \ 'default' : '',
-        \ 'php' : $HOME . '/.vim/dict/php.dict',
-        \ 'ctp' : $HOME . '/.vim/dict/php.dict'
-        \ }
-
-  if !exists('g:neocomplcache_keyword_patterns')
-    let g:neocomplcache_keyword_patterns = {}
-  endif
-  let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
-
-  " スニペットを展開する。スニペットが関係しないところでは行末まで削除
-  imap <expr><C-k> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-o>D"
-  smap <expr><C-k> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-o>D"
-
-  " 前回行われた補完をキャンセルします
-  inoremap <expr><C-g> neocomplcache#undo_completion()
-
-  " 補完候補のなかから、共通する部分を補完します
-  inoremap <expr><C-l> neocomplcache#complete_common_string()
-
-  " 改行で補完ウィンドウを閉じる
-  inoremap <expr><CR> neocomplcache#smart_close_popup() . "\<CR>"
-
-  "tabで補完候補の選択を行う
-  inoremap <expr><TAB> pumvisible() ? "\<Down>" : "\<TAB>"
-  inoremap <expr><S-TAB> pumvisible() ? "\<Up>" : "\<S-TAB>"
-
-  " <C-h>や<BS>を押したときに確実にポップアップを削除します
-  inoremap <expr><C-h> neocomplcache#smart_close_popup().”\<C-h>”
-
-  " 現在選択している候補を確定します
-  inoremap <expr><C-y> neocomplcache#close_popup()
-
-  " 現在選択している候補をキャンセルし、ポップアップを閉じます
-  inoremap <expr><C-e> neocomplcache#cancel_popup()
-endfunction
-
-" NeoBundle がインストールされているなら LoadBundles() を呼び出す
-" そうでないなら WithoutBundles() を呼び出す
-function! s:InitNeoBundle()
-  if isdirectory(expand("~/.vim/bundle/neobundle.vim/"))
-    filetype plugin indent off
-    if has('vim_starting')
-      set runtimepath+=~/.vim/bundle/neobundle.vim/
-    endif
-    try
-      call neobundle#rc(expand('~/.vim/bundle/'))
-      call s:LoadBundles()
-    catch
-      call s:WithoutBundles()
-    endtry 
-  else
-    call s:WithoutBundles()
-  endif
-
-  filetype indent plugin on
-  syntax on
-endfunction
-
-call s:InitNeoBundle()
+ " ファイルタイプ自動識別ON
+ filetype indent plugin on
+ 
