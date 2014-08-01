@@ -27,8 +27,11 @@ if [ -f ~/.zsh/auto-fu.zsh ]; then
   zle -N zle-line-init
   zstyle ':completion:*' completer _oldlist _complete
   zstyle ':auto-fu:var' autoable-function/skiplines \
-    '(scp|svn) *'
+    '(scp|svn|java|mount_smbfs|mount_afp) *'
 fi
 
 # rbenv
 eval "$(rbenv init -)"
+
+# java default version
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.6)

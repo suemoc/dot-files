@@ -54,7 +54,7 @@
  set backspace=indent,eol,start
  
  " オートインデント
- " set autoindent
+ set autoindent
  
  " 移動コマンドを使ったとき、行頭に移動しない
  set nostartofline
@@ -101,13 +101,16 @@
  " キーコードはすぐにタイムアウト。マッピングはタイムアウトしない
  set notimeout ttimeout ttimeoutlen=200
  
- " <F11>キーで'paste'と'nopaste'を切り替える
- set pastetoggle=<F11>
+ " 'paste'と'nopaste'を切り替える
+ set pastetoggle=<C-P>
  
  " color
  if !has('gui_running')
    set t_Co=256
  endif
+
+ " ヤンクしたときにクリップボードにコピー
+ "set clipboard=unnamed,autoselect
  
  "------------------------------------------------------------
  " Indentation options {{{1
@@ -138,7 +141,9 @@
  nnoremap <Leader>. :<C-u>edit $HOME/.vimrc<CR>
  " reload vimrc
  nnoremap <Leader>s. :<C-u>source $HOME/.vimrc<CR>
- 
+
+ " 直前のファイルを開く
+ nnoremap <Leader>h :<C-u>b<Space>#<CR>
 
  "------------------------------------------------------------
  " ファイルタイプごとの対応
@@ -171,6 +176,11 @@
    NeoBundle 'itchyny/lightline.vim'
    NeoBundle 'tpope/vim-surround'
    NeoBundle 'altercation/vim-colors-solarized'
+   NeoBundle 'Townk/vim-autoclose'
+   NeoBundle 'mattn/emmet-vim'
+   NeoBundle 'fuenor/qfixhowm'
+   NeoBundle "osyo-manga/unite-qfixhowm"
+   NeoBundle "thinca/vim-quickrun"
    " ...
    " 読み込んだプラグインの設定
    " ...
@@ -192,7 +202,10 @@
    let g:neocomplcache_enable_camel_case_completion  =  1
  
    " ポップアップメニューで表示される候補の数
-   let g:neocomplcache_max_list = 20
+   let g:neocomplcache_max_list = 5
+
+   " 最初の候補を自動選択
+   let g:neocomplcache_enable_auto_select = 1
  
    " シンタックスをキャッシュするときの最小文字長
    let g:neocomplcache_min_syntax_length = 3
@@ -220,7 +233,7 @@
    inoremap <expr><C-l> neocomplcache#complete_common_string()
  
    " 改行で補完ウィンドウを閉じる
-   inoremap <expr><CR> neocomplcache#smart_close_popup() . "\<CR>"
+   inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
  
    "tabで補完候補の選択を行う
    inoremap <expr><TAB> pumvisible() ? "\<Down>" : "\<TAB>"
@@ -235,6 +248,7 @@
    " 現在選択している候補をキャンセルし、ポップアップを閉じます
    inoremap <expr><C-e> neocomplcache#cancel_popup()
  
+
    """ unite.vim
    " start insert mode
    let g:unite_enable_start_insert=1
@@ -244,10 +258,20 @@
    " mappings
    nnoremap [unite]b :<C-u>Unite<Space>buffer<CR>
    nnoremap [unite]f :<C-u>Unite<Space>file<CR>
-   nnoremap [unite]m :<C-u>Unite<Space>file_mru<CR>
+   "nnoremap [unite]m :<C-u>Unite<Space>file_mru<CR>
    nnoremap [unite]a :<C-u>Unite buffer file file_mru bookmark<CR>
    nnoremap [unite]r :<C-u>Unite<Space>register<CR>
    nnoremap [unite]R :<C-u>UniteResume<CR>
+
+   " agでgrep検索
+   nnoremap [unite]g :<C-u>Unite<Space>grep:. -buffer-name=search-buffer<CR>
+
+   " unite grep に ag(The Silver Searcher) を使う
+   if executable('ag')
+     let g:unite_source_grep_command = 'ag'
+     let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
+     let g:unite_source_grep_recursive_opt = ''
+   endif
  
    """ solarized
    set background=dark
@@ -263,6 +287,35 @@
    let g:lightline = {
          \ 'colorscheme': 'solarized',
          \ }
+
+   """ emmet
+   " keymap
+   let g:user_emmet_leader_key='<c-y>'
+   "let g:user_emmet_leader_key=' e'
+
+   """ QFixHowm
+   "QFixHowmキーマップ
+   let g:QFixHowm_Key = 'g'
+
+   "メモファイルの保存先
+   let g:howm_dir             = '~/var/storage/Dropbox/docs/howm'
+   let g:howm_fileencoding    = 'utf-8'
+   let g:howm_fileformat      = 'unix'
+
+   let g:howm_filename          = 'memo_/%Y-%m-%d-%H%M%S.howm'
+   let g:QFixHowm_DiaryFile     = 'diary/%Y-%m-%d-000000.howm'
+   let g:QFixHowm_QuickMemoFile = "tmp__/0000-00-00-000000.howm"
+
+   " unite mappings
+   nnoremap [unite]m :<C-u>Unite<Space>qfixhowm/new<Space>qfixhowm<Space>-hide-source-names<CR>
+
+   """ QickRun
+   let g:quickrun_config = {
+   \   "_" : {
+   \       "outputter/buffer/split" : ":botright",
+   \       "outputter/buffer/close_on_empty" : 1
+   \   },
+   \}
  
  endfunction
  

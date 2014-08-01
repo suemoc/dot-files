@@ -25,22 +25,50 @@ if [ -f ~/.zsh/auto-fu.zsh ]; then
   zle -N zle-line-init
   zstyle ':completion:*' completer _oldlist _complete
   zstyle ':auto-fu:var' autoable-function/skiplines \
-    '(scp|svn|java|mount_smbfs|mount_afp) *'
+    '(scp|svn|java|mount_smbfs|mount_afp|gradle|npm) *'
 fi
 
+#=============================
+## source peco.zsh
+##=============================
+
+[[ -f ${HOME}/.zsh/peco.zsh ]] && source ${HOME}/.zsh/peco.zsh
+
 # rbenv
-eval "$(rbenv init -)"
+if [[ -d ~/.rbenv ]]; then
+  eval "$(rbenv init -)"
+fi
 
 # phpenv
-export PATH=$PATH:$HOME/.phpenv/bin
-eval "$(phpenv init -)"
+if [[ -d ~/.phpenv ]]; then
+  export PATH=$PATH:$HOME/.phpenv/bin
+  eval "$(phpenv init -)"
+fi
 
 # node
-[[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh
-nvm use default
-npm_dir=${NVM_PATH}_modules
-export NODE_PATH=$npm_dir
+if [[ -f ~/.nvm/nvm.sh ]]; then
+  [[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh
+  nvm use default
+  npm_dir=${NVM_PATH}_modules
+  export NODE_PATH=$npm_dir
+fi
 
 # java default version
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.6)
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
+
+# golang
+GO_VERSION=1.3
+export GOPATH=${HOME}/.go/${GO_VERSION}
+export PATH=$PATH:${GOPATH}/bin
+
+# google cloud sdk
+# The next line updates PATH for the Google Cloud SDK.
+source ${HOME}'/var/lib/google-cloud-sdk/path.zsh.inc'
+
+# The next line enables zsh completion for gcloud.
+source ${HOME}'/var/lib/google-cloud-sdk/completion.zsh.inc'
+
+# gradle
+export GRADLE_HOME=/usr/local/Cellar/gradle/2.0
+export PATH=$PATH:${GRADLE_HOME}/bin
 
