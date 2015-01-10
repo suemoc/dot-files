@@ -3,6 +3,8 @@
 ##=============================
 alias manga="open -a cooViewer"
 
+alias sikuli="java -Dsikuli.FromCommandLine -jar /Applications/SikuliX-IDE.app/Contents/sikuli-ide.jar -r"
+
 #=============================
 ## source z.sh
 ##=============================
@@ -19,19 +21,28 @@ fi
 ## source auto-fu.zsh
 ##=============================
 
-if [ -f ~/.zsh/auto-fu.zsh ]; then
-  source ~/.zsh/auto-fu.zsh
-  function zle-line-init () {
-    auto-fu-init
-  }
-  zle -N zle-line-init
-  zstyle ':completion:*' completer _oldlist _complete
-  zstyle ':auto-fu:var' autoable-function/skiplines \
-    '(scp|svn|java|mount_smbfs|mount_afp) *'
-fi
+#if [ -f ~/.zsh/auto-fu.zsh ]; then
+#  source ~/.zsh/auto-fu.zsh
+#  function zle-line-init () {
+#    auto-fu-init
+#  }
+#  zle -N zle-line-init
+#  zstyle ':completion:*' completer _oldlist _complete
+#  zstyle ':auto-fu:var' autoable-function/skiplines \
+#    '(scp|svn|java|mount_smbfs|mount_afp) *'
+#fi
 
 # rbenv
 eval "$(rbenv init -)"
 
+# node
+if [[ -f ~/.nvm/nvm.sh ]]; then
+  [[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh
+  nvm use default
+  npm_dir=${NVM_PATH}_modules
+  export NODE_PATH=$npm_dir
+fi
+
 # java default version
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.6)
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+

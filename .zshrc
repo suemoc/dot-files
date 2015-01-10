@@ -4,6 +4,7 @@ compinit
 
 #文字コード
 export LANG=ja_JP.UTF-8
+export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
 
 # パスの設定
 PATH=/usr/local/bin:$HOME/bin:$PATH
@@ -113,11 +114,13 @@ alias -g G='| grep'
 alias -g H='| head'
 alias -g T='| tail'
 
+alias dgrep='find . -type f -print | xargs grep'
+
 #その他
 #キーバインド
 bindkey -e
 
-#ビープ音ならなさない
+#ビープ音ならさない
 setopt nobeep
 
 #エディタ

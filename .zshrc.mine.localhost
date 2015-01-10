@@ -17,16 +17,16 @@ fi
 ## source auto-fu.zsh
 ##=============================
 
-if [ -f ~/.zsh/auto-fu.zsh ]; then
-  source ~/.zsh/auto-fu.zsh
-  function zle-line-init () {
-    auto-fu-init
-  }
-  zle -N zle-line-init
-  zstyle ':completion:*' completer _oldlist _complete
-  zstyle ':auto-fu:var' autoable-function/skiplines \
-    '(scp|svn|java|mount_smbfs|mount_afp|gradle|npm) *'
-fi
+#if [ -f ~/.zsh/auto-fu.zsh ]; then
+#  source ~/.zsh/auto-fu.zsh
+#  function zle-line-init () {
+#    auto-fu-init
+#  }
+#  zle -N zle-line-init
+#  zstyle ':completion:*' completer _oldlist _complete
+#  zstyle ':auto-fu:var' autoable-function/skiplines \
+#    '(scp|svn|java|mount_smbfs|mount_afp|gradle|npm) *'
+#fi
 
 #=============================
 ## source peco.zsh
@@ -54,7 +54,7 @@ if [[ -f ~/.nvm/nvm.sh ]]; then
 fi
 
 # java default version
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
 # golang
 GO_VERSION=1.3
@@ -63,12 +63,15 @@ export PATH=$PATH:${GOPATH}/bin
 
 # google cloud sdk
 # The next line updates PATH for the Google Cloud SDK.
-source ${HOME}'/var/lib/google-cloud-sdk/path.zsh.inc'
+#source ${HOME}'/var/lib/google-cloud-sdk/path.zsh.inc'
 
 # The next line enables zsh completion for gcloud.
-source ${HOME}'/var/lib/google-cloud-sdk/completion.zsh.inc'
+#source ${HOME}'/var/lib/google-cloud-sdk/completion.zsh.inc'
 
 # gradle
 export GRADLE_HOME=/usr/local/Cellar/gradle/2.0
 export PATH=$PATH:${GRADLE_HOME}/bin
+
+# tmuxinater
+source ~/.tmuxinator/tmuxinator.zsh
 
