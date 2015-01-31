@@ -164,12 +164,20 @@ set nobackup
  " insertモードを抜ける
  "inoremap <silent> jj <ESC>
  "inoremap <silent> <C-j> j
+ nnoremap <C-j> <Nop>
+ inoremap <silent> <C-j> <ESC>
 
  " 挿入モードでのカーソル移動
- inoremap <C-j> <Down>
- inoremap <C-k> <Up>
- inoremap <C-h> <Left>
- inoremap <C-l> <Right>
+ "inoremap <C-j> <Down>
+ "inoremap <C-k> <Up>
+ "inoremap <C-h> <Left>
+ "inoremap <C-l> <Right>
+ inoremap <C-a> <Home>
+ inoremap <C-e> <End>
+ inoremap <C-d> <Del>
+
+ " 検索時の正規表現で特殊文字をエスケープせずに使う
+ nnoremap / /\v
 
  " 行頭・行末移動方向をキーの相対位置にあわせる
  nnoremap 0 $
@@ -185,9 +193,19 @@ set nobackup
  nnoremap <ESC><ESC> :nohlsearch<CR>
 
  " 自動的に閉じ括弧
- imap { {}<LEFT>
- imap [ []<LEFT>
- imap ( ()<LEFT>
+ "imap { {}<Left>
+ "imap [ []<Left>
+ "imap ( ()<Left>
+
+ " クリップボードにコピー
+ vnoremap gy "*y
+
+ " タブ移動に使うkeymapを空けておく
+ " noremap <C-q> <Nop>
+ " noremap! <C-q> <Nop>
+ " noremap <C-w> <Nop>
+ " noremap! <C-w> <Nop>
+ 
 
  "------------------------------------------------------------
  " ファイルタイプごとの対応
@@ -236,16 +254,17 @@ set nobackup
    NeoBundle 'itchyny/lightline.vim'
    NeoBundle 'tpope/vim-surround'
    NeoBundle 'altercation/vim-colors-solarized'
-   " NeoBundle 'Townk/vim-autoclose'
+   NeoBundle 'Townk/vim-autoclose'
    NeoBundle 'fuenor/qfixhowm'
-   NeoBundle "osyo-manga/unite-qfixhowm"
-   NeoBundle "thinca/vim-quickrun"
-   NeoBundle "Lokaltog/vim-easymotion"
+   NeoBundle 'osyo-manga/unite-qfixhowm'
+   NeoBundle 'thinca/vim-quickrun'
+   " NeoBundle 'Lokaltog/vim-easymotion'
+   NeoBundle 'rhysd/clever-f.vim'
    NeoBundle 'scrooloose/syntastic.git'
    NeoBundle 'kana/vim-smartword.git'
    NeoBundle 'mattn/emmet-vim'
    NeoBundle 'tomtom/tcomment_vim'
-   NeoBundle "kchmck/vim-coffee-script"
+   NeoBundle 'kchmck/vim-coffee-script'
    NeoBundle 'marijnh/tern_for_vim', {
      \ 'build': {
      \   'others': 'npm install'
@@ -302,26 +321,34 @@ set nobackup
    " inoremap <expr><C-l> neocomplcache#complete_common_string()
 
    " 改行で補完ウィンドウを閉じる
-   inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+   " inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+
+   " <CR>: close popup and save indent.
+   inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+   function! s:my_cr_function()
+     return neocomplcache#smart_close_popup() . "\<CR>"
+   endfunction
 
    "tabで補完候補の選択を行う
    "inoremap <expr><TAB> pumvisible() ? "\<Down>" : "\<TAB>"
    inoremap <expr><S-TAB> pumvisible() ? "\<Up>" : "\<S-TAB>"
+   "inoremap <expr><Down> pumvisible() ? "\<Down>" : "\<Down>"
+   "inoremap <expr><C-j> pumvisible() ? "\<Up>" : "\<Down>"
+   "inoremap <expr><Down>  neocomplcache#close_popup() . "\<Down>"
 
    " <C-h>や<BS>を押したときに確実にポップアップを削除します
    " inoremap <expr><C-h> neocomplcache#smart_close_popup().”\<C-h>”
 
    " 現在選択している候補を確定します
-   inoremap <expr><C-y> neocomplcache#close_popup()
+   " inoremap <expr><C-y> neocomplcache#close_popup()
 
    " 現在選択している候補をキャンセルし、ポップアップを閉じます
-   inoremap <expr><C-e> neocomplcache#cancel_popup()
-
+   " inoremap <expr><C-e> neocomplcache#cancel_popup()
 
    """ Neosnippet
    " Plugin key-mappings.
-   "imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-   "smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+   imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+   smap <C-k>     <Plug>(neosnippet_expand_or_jump)
  
    " SuperTab like snippets behavior.
    "imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
@@ -363,7 +390,8 @@ set nobackup
    call unite#custom#source('file_rec/async', 'ignore_pattern', '\(png\|gif\|jpeg\|jpg\)$')
 
    " 最近開いたファイルを検索
-   nnoremap <silent> <C-m> :<C-u>Unite<Space>file_mru<CR>
+   " C-mがautocloseと競合するため一時コメントアウト
+   "nnoremap <silent> <C-m> :<C-u>Unite<Space>file_mru<CR>
 
    "unite.vimを開いている間のキーマッピング
    autocmd FileType unite call s:unite_my_settings()
@@ -464,7 +492,6 @@ set nobackup
          \ }
    " keymap
    let g:user_emmet_leader_key='<c-y>'
-   "let g:user_emmet_leader_key=' e'
 
    """ QFixHowm
    "QFixHowmキーマップ
@@ -479,19 +506,22 @@ set nobackup
    let g:QFixHowm_DiaryFile     = 'diary/%Y-%m-%d-000000.howm'
    let g:QFixHowm_QuickMemoFile = "tmp__/0000-00-00-000000.howm"
 
+   " MRU保存先
+   let g:QFixMRU_Filename     = '~/var/storage/Dropbox/docs/howm/.qfixmru'
+   " MRU表示数
+   let g:QFixMRU_Entries      = 30
+   " MRUに登録しないファイル名(正規表現)
+   let g:QFixMRU_IgnoreFile   = '000000.howm'
+
    " メモの一覧表示
    " let g:QFixHowm_FileList = '**/????-??-??-?????0.howm'
-   " let g:QFixHowm_FileList = 'abc.howm'
    " let g:QFixHowm_TitleListCache = 0
 
    " QFixList表示でファイルへ移動したらウィンドウを閉じる
-   " let g:QFixHowm_ListCloseOnJump = 1
-
-   " MRUに登録するファイルの正規表現(設定すると指定ファイル以外登録されない)
-   " let g:QFixMRU_RegisterFile = '/memo_/'
+   let g:QFixHowm_ListCloseOnJump = 1
 
    " unite mappings
-   nnoremap [unite]m :<C-u>Unite<Space>qfixhowm/new<Space>qfixhowm<Space>-hide-source-names<CR>
+   "nnoremap [unite]m :<C-u>Unite<Space>qfixhowm/new<Space>qfixhowm<Space>-hide-source-names<CR>
 
    """ QickRun
    let g:quickrun_config = {
@@ -512,6 +542,11 @@ set nobackup
    nmap w <Plug>(smartword-w)
    nmap b <Plug>(smartword-b)
    nmap e <Plug>(smartword-e)
+
+   """ clever-f
+   " 大文字を入力した場合のみ大文字小文字を区別する
+   let g:clever_f_smart_case = 1
+   let g:clever_f_use_migemo = 1
 
  endfunction
 

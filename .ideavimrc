@@ -1,0 +1,7 @@
+inoremap <c-]> <esc>
+inoremap <C-j> <esc>
+
+vnoremap v $h
+
+nnoremap 0 $
+nnoremap 1 0
