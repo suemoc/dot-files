@@ -9,6 +9,10 @@ autodetach on
 
 defscrollback 1000
 
+# keymap
+bind l next
+bind h prev
+
 # log
 logfile "$HOME/.screen/screen-%Y%m%d-%n.log"
 logtstamp on

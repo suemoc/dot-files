@@ -10,6 +10,8 @@ alias sikuli="java -Dsikuli.FromCommandLine -jar /Applications/SikuliX-IDE.app/C
 
 alias hdu="du -h -d 1"
 
+alias gv="groovy"
+
 #=============================
 ## source z.sh
 ##=============================

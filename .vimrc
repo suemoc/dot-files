@@ -246,7 +246,14 @@ set nobackup
    NeoBundle 'Shougo/neocomplcache'
    NeoBundle 'Shougo/unite.vim'
    NeoBundle 'Shougo/neomru.vim'
-   NeoBundle 'Shougo/vimproc.vim'
+   NeoBundle 'Shougo/vimproc.vim', {
+   \ 'build' : {
+   \     'windows' : 'make -f make_mingw32.mak',
+   \     'cygwin' : 'make -f make_cygwin.mak',
+   \     'mac' : 'make -f make_mac.mak',
+   \     'unix' : 'make -f make_unix.mak',
+   \    },
+   \ }
    NeoBundle 'Shougo/vimfiler.vim'
    NeoBundle 'Shougo/vimshell.vim'
    NeoBundle 'Shougo/neosnippet'
@@ -260,15 +267,37 @@ set nobackup
    NeoBundle 'thinca/vim-quickrun'
    " NeoBundle 'Lokaltog/vim-easymotion'
    NeoBundle 'rhysd/clever-f.vim'
-   NeoBundle 'scrooloose/syntastic.git'
    NeoBundle 'kana/vim-smartword.git'
    NeoBundle 'mattn/emmet-vim'
    NeoBundle 'tomtom/tcomment_vim'
    NeoBundle 'kchmck/vim-coffee-script'
-   NeoBundle 'marijnh/tern_for_vim', {
-     \ 'build': {
-     \   'others': 'npm install'
-     \}}
+   NeoBundle "slim-template/vim-slim"
+   NeoBundle 'kana/vim-operator-user'
+   NeoBundle 'tyru/operator-camelize.vim'
+   NeoBundle 'h1mesuke/vim-alignta'
+   NeoBundle 'marcus/rsense', {
+   \ 'autoload': {
+   \   'filetypes': 'ruby',
+   \ },
+   \ }
+   NeoBundle 'Shougo/neocomplcache-rsense.vim', {
+   \ 'depends': ['Shougo/neocomplcache.vim', 'marcus/rsense'],
+   \ }
+
+   " 静的解析
+   NeoBundle 'scrooloose/syntastic'
+
+   " ドキュメント参照
+   NeoBundle 'thinca/vim-ref'
+   NeoBundle 'yuku-t/vim-ref-ri'
+
+   " メソッド定義元へのジャンプ
+   NeoBundle 'szw/vim-tags'
+
+   "NeoBundle 'marijnh/tern_for_vim', {
+   "  \ 'build': {
+   "  \   'others': 'npm install'
+   "  \}}
    " ...
    " 読み込んだプラグインの設定
    " ...
@@ -287,6 +316,7 @@ set nobackup
    " _(アンダースコア)区切りの補完を有効化
    let g:neocomplcache_enable_underbar_completion = 1
 
+   " CamelCaseの補完を有効化
    let g:neocomplcache_enable_camel_case_completion  =  1
 
    " ポップアップメニューで表示される候補の数
@@ -295,8 +325,8 @@ set nobackup
    " 最初の候補を自動選択
    "let g:neocomplcache_enable_auto_select = 1
 
-   " シンタックスをキャッシュするときの最小文字長
-   let g:neocomplcache_min_syntax_length = 3
+   " シンタックスをキャッシュするときの最小文字長(default:4)
+   let g:neocomplcache_min_syntax_length = 4
 
    " ディクショナリ定義
    let g:neocomplcache_dictionary_filetype_lists = {
@@ -305,6 +335,7 @@ set nobackup
          \ 'ctp' : $HOME . '/.vim/dict/php.dict'
          \ }
 
+   " 収集するキーワードパターン
    if !exists('g:neocomplcache_keyword_patterns')
      let g:neocomplcache_keyword_patterns = {}
    endif
@@ -315,7 +346,7 @@ set nobackup
    " smap <expr><C-k> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-o>D"
 
    " 前回行われた補完をキャンセルします
-   inoremap <expr><C-g> neocomplcache#undo_completion()
+   "inoremap <expr><C-g> neocomplcache#undo_completion()
 
    " 補完候補のなかから、共通する部分を補完します
    " inoremap <expr><C-l> neocomplcache#complete_common_string()
@@ -524,10 +555,17 @@ set nobackup
    "nnoremap [unite]m :<C-u>Unite<Space>qfixhowm/new<Space>qfixhowm<Space>-hide-source-names<CR>
 
    """ QickRun
+   " <Leader>r で実行
+   " すべてのtypeに適用するoption
+   " ウィンドウ下部に出力
+   " 出力がなければ自動で閉じる
+   " vimprocで非同期実行
    let g:quickrun_config = {
    \   "_" : {
    \       "outputter/buffer/split" : ":botright",
-   \       "outputter/buffer/close_on_empty" : 1
+   \       "outputter/buffer/close_on_empty" : 1,
+   \       "runner" : "vimproc",
+   \       "runner/vimproc/updatetime" : 10
    \   },
    \}
 
@@ -547,6 +585,26 @@ set nobackup
    " 大文字を入力した場合のみ大文字小文字を区別する
    let g:clever_f_smart_case = 1
    let g:clever_f_use_migemo = 1
+
+   """ camelize
+   map <Leader>cc <Plug>(operator-camelize)
+   map <Leader>CC <Plug>(operator-decamelize)
+
+   """ rsense
+   let g:rsenseHome = '/usr/local/Cellar/rsense/0.3/libexec'
+   let g:rsenseUseOmniFunc = 1
+
+   if !exists('g:neocomplcache_omni_patterns')
+     let g:neocomplcache_omni_patterns = {}
+   endif
+   let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+
+   """ rubocop
+   " syntastic_mode_mapをactiveにするとバッファ保存時にsyntasticが走る
+   " active_filetypesに、保存時にsyntasticを走らせるファイルタイプを指定する
+   let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby'] }
+   let g:syntastic_ruby_checkers = ['rubocop']
+
 
  endfunction
 

@@ -5,3 +5,6 @@ vnoremap v $h
 
 nnoremap 0 $
 nnoremap 1 0
+
+set visualbell
+set noerrorbells

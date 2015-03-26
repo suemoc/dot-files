@@ -141,8 +141,8 @@ linux*)
 esac
 
 alias l='ls -l'
+alias ll='ls -l'
 alias la='ls -la'
-#alias ll='ls -la'
 #alias lla='ls -al'
 alias llh='ls -hla'
 
@@ -157,7 +157,7 @@ alias -g T='| tail'
 alias dgrep='find . -type f -print | xargs grep'
 
 alias up="cd ..; ls -l"
-alias gs="git status"
+alias st="git status"
 alias vi="vim"
 alias f="open ."
 
