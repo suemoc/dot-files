@@ -1,0 +1,4 @@
+map  j 10j
+map  k 10k
+
+set searchengines={"google":"https://www.google.co.jp/search?q={{keyword}}", "yahoo":"http://search.yahoo.co.jp//search?p={{keyword}}","wikipedia":"http://en.wikipedia.org/wiki/{{keyword}}"}
