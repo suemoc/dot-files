@@ -405,12 +405,13 @@ set nobackup
    nnoremap [unite] <Nop>
    nmap <Leader>f [unite]
    " mappings
-   nnoremap [unite]b :<C-u>Unite<Space>buffer<CR>
+   nnoremap [unite]l :<C-u>Unite<Space>buffer<CR>
    nnoremap [unite]f :<C-u>Unite<Space>file<CR>
    "nnoremap [unite]m :<C-u>Unite<Space>file_mru<CR>
-   nnoremap [unite]a :<C-u>Unite buffer file file_mru bookmark<CR>
+   "nnoremap [unite]a :<C-u>Unite buffer file file_mru bookmark<CR>
    nnoremap [unite]r :<C-u>Unite<Space>register<CR>
-   nnoremap [unite]R :<C-u>UniteResume<CR>
+   "nnoremap [unite]R :<C-u>UniteResume<CR>
+   nnoremap [unite]b :<C-u>Unite bookmark<CR>
 
    " プロジェクト下のファイル検索
    nnoremap <silent> <C-p> :<C-u>Unite<Space>file_rec/async:!<CR>
