@@ -40,7 +40,13 @@ fi
 #fi
 
 # rbenv
-eval "$(rbenv init -)"
+if [[ -d ~/.rbenv ]]; then
+  eval "$(rbenv init -)"
+fi
+
+## rbenv binstubs setting
+export PATH=./vendor/bin:$PATH
+alias be='bundle exec'
 
 # node
 if [[ -f ~/.nvm/nvm.sh ]]; then

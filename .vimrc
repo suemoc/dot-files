@@ -106,7 +106,9 @@ set nobackup
 
  " スペース・改行を可視化
  set list
- set listchars=tab:»-,trail:-,eol:↲,extends:»,precedes:«,nbsp:%
+ " tab:タブ文字, trail:行末に続くスペース, eol: 改行文字, extends:右を省略,
+ " precedes: 左を省略, nbsp:不可視のスペース(&nbsp;)
+ set listchars=tab:»-,trail:.,extends:»,precedes:«,nbsp:%
 
  " 全角スペース強調
  augroup highlightDoubleByteSpace
@@ -126,6 +128,16 @@ set nobackup
  if !has('gui_running')
    set t_Co=256
  endif
+
+ " 全角の記号を正しく表示する
+ set ambiwidth=double
+
+ " カレント行ハイライト
+ set cursorline
+ " アンダーラインを引く(color terminal)
+ highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE
+ " アンダーラインを引く(gui)
+ highlight CursorLine gui=underline guifg=NONE guibg=NONE
 
  "------------------------------------------------------------
  " Indentation
@@ -149,9 +161,6 @@ set nobackup
 
  " Yの動作をDやCと同じにする
  map Y y$
-
- " <C-L>で検索後の強調表示を解除する
- "nnoremap <C-L> :nohl<CR><C-L>
 
  " edit vimrc
  nnoremap <Leader>. :<C-u>edit $HOME/.vimrc<CR>
@@ -199,6 +208,8 @@ set nobackup
 
  " クリップボードにコピー
  vnoremap gy "*y
+ " クリップボードから書式を無視してペースト
+ nnoremap gp :<C-u>a!<CR>
 
  " タブ移動に使うkeymapを空けておく
  " noremap <C-q> <Nop>
@@ -239,13 +250,14 @@ set nobackup
    colorscheme desert
  endfunction
 
- " NeoBundle よるプラグインのロードと各プラグインの初期化
+ " NeoBundle によるプラグインのロードと各プラグインの初期化
  function! s:LoadBundles()
+   "----------------------------
    " 読み込むプラグインの指定
+   "----------------------------
+
+   """ Base
    NeoBundle 'Shougo/neobundle.vim'
-   NeoBundle 'Shougo/neocomplcache'
-   NeoBundle 'Shougo/unite.vim'
-   NeoBundle 'Shougo/neomru.vim'
    NeoBundle 'Shougo/vimproc.vim', {
    \ 'build' : {
    \     'windows' : 'make -f make_mingw32.mak',
@@ -256,148 +268,119 @@ set nobackup
    \ }
    NeoBundle 'Shougo/vimfiler.vim'
    NeoBundle 'Shougo/vimshell.vim'
+
+   """ 補完
+   NeoBundle 'Shougo/neocomplete.vim'
+
+   """ スニペット
    NeoBundle 'Shougo/neosnippet'
    NeoBundle 'Shougo/neosnippet-snippets'
-   NeoBundle 'itchyny/lightline.vim'
+
+   """ Utility
+   " テキストオブジェクトを囲む/削除する
    NeoBundle 'tpope/vim-surround'
-   NeoBundle 'altercation/vim-colors-solarized'
-   NeoBundle 'Townk/vim-autoclose'
+   " fで日本語ヨミ検索 & f連打で次の候補
+   NeoBundle 'rhysd/clever-f.vim'
+   " 単語移動をスマートに
+   NeoBundle 'kana/vim-smartword.git'
+   " 「:Alignta <Delimiter>」 で整列
+   NeoBundle 'h1mesuke/vim-alignta'
+
+   """ Unite
+   NeoBundle 'Shougo/unite.vim'
+   NeoBundle 'Shougo/neomru.vim'
+
+   """ Display
+   NeoBundle 'itchyny/lightline.vim'
+   NeoBundle 'Yggdroot/indentLine'
+   "NeoBundle 'altercation/vim-colors-solarized'
+   "NeoBundle 'tomasr/molokai'
+   NeoBundle 'w0ng/vim-hybrid'
+
+   """ qfixhowm
    NeoBundle 'fuenor/qfixhowm'
    NeoBundle 'osyo-manga/unite-qfixhowm'
+
+   """ Coding
+   NeoBundle 'Townk/vim-autoclose'
    NeoBundle 'thinca/vim-quickrun'
-   " NeoBundle 'Lokaltog/vim-easymotion'
-   NeoBundle 'rhysd/clever-f.vim'
-   NeoBundle 'kana/vim-smartword.git'
+   " 保存時に静的解析
+   NeoBundle 'scrooloose/syntastic'
+
+
+   """ ファイルタイプ別
+   " html
    NeoBundle 'mattn/emmet-vim'
-   NeoBundle 'tomtom/tcomment_vim'
+
+   " coffee
    NeoBundle 'kchmck/vim-coffee-script'
+
+   " ruby
    NeoBundle "slim-template/vim-slim"
-   NeoBundle 'kana/vim-operator-user'
-   NeoBundle 'tyru/operator-camelize.vim'
-   NeoBundle 'h1mesuke/vim-alignta'
+
+   " scala
+   NeoBundle "derekwyatt/vim-scala"
+
    NeoBundle 'marcus/rsense', {
    \ 'autoload': {
    \   'filetypes': 'ruby',
    \ },
    \ }
-   NeoBundle 'Shougo/neocomplcache-rsense.vim', {
-   \ 'depends': ['Shougo/neocomplcache.vim', 'marcus/rsense'],
+   NeoBundle 'supermomonga/neocomplete-rsense.vim', {
+   \ 'depends': ['Shougo/neocomplete.vim', 'marcus/rsense'],
    \ }
 
-   " 静的解析
-   NeoBundle 'scrooloose/syntastic'
+   " Markdown
+   NeoBundle 'plasticboy/vim-markdown'
+   NeoBundle 'kannokanno/previm'
+   NeoBundle 'tyru/open-browser.vim'
 
+   """ Test
    " ドキュメント参照
    NeoBundle 'thinca/vim-ref'
    NeoBundle 'yuku-t/vim-ref-ri'
-
    " メソッド定義元へのジャンプ
    NeoBundle 'szw/vim-tags'
 
-   "NeoBundle 'marijnh/tern_for_vim', {
-   "  \ 'build': {
-   "  \   'others': 'npm install'
-   "  \}}
-   " ...
+
+   "----------------------------
    " 読み込んだプラグインの設定
-   " ...
+   "----------------------------
 
-
-   "" neocomplcache
-   " 補完ウィンドウの設定
-   set completeopt=menuone
-
+   """ neocomplete
    " 起動時に有効化
-   let g:neocomplcache_enable_at_startup = 1
-
+   let g:neocomplete#enable_at_startup = 1
+   let g:neocomplete#enable_ignore_case = 1
    " 大文字が入力されるまで大文字小文字の区別を無視する
-   let g:neocomplcache_enable_smart_case = 1
-
-   " _(アンダースコア)区切りの補完を有効化
-   let g:neocomplcache_enable_underbar_completion = 1
-
-   " CamelCaseの補完を有効化
-   let g:neocomplcache_enable_camel_case_completion  =  1
-
-   " ポップアップメニューで表示される候補の数
-   let g:neocomplcache_max_list = 5
-
-   " 最初の候補を自動選択
-   "let g:neocomplcache_enable_auto_select = 1
-
-   " シンタックスをキャッシュするときの最小文字長(default:4)
-   let g:neocomplcache_min_syntax_length = 4
-
-   " ディクショナリ定義
-   let g:neocomplcache_dictionary_filetype_lists = {
-         \ 'default' : '',
-         \ 'php' : $HOME . '/.vim/dict/php.dict',
-         \ 'ctp' : $HOME . '/.vim/dict/php.dict'
-         \ }
-
+   let g:neocomplete#enable_smart_case = 1
    " 収集するキーワードパターン
-   if !exists('g:neocomplcache_keyword_patterns')
-     let g:neocomplcache_keyword_patterns = {}
+   if !exists('g:neocomplete#keyword_patterns')
+       let g:neocomplete#keyword_patterns = {}
    endif
-   let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+   let g:neocomplete#keyword_patterns._ = '\h\w*'
+   " 辞書
+   if !exists('g:neocomplete#sources#dictionary#dictionaries')
+     let g:neocomplete#sources#dictionary#dictionaries = {}
+   endif
+   let dict = g:neocomplete#sources#dictionary#dictionaries
+   " 補完ポップアップを閉じる
+   inoremap <expr><C-e>  pumvisible() ? neocomplete#close_popup() : "<End>"
 
-   " スニペットを展開する。スニペットが関係しないところでは行末まで削除
-   " imap <expr><C-k> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-o>D"
-   " smap <expr><C-k> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-o>D"
-
-   " 前回行われた補完をキャンセルします
-   "inoremap <expr><C-g> neocomplcache#undo_completion()
-
-   " 補完候補のなかから、共通する部分を補完します
-   " inoremap <expr><C-l> neocomplcache#complete_common_string()
-
-   " 改行で補完ウィンドウを閉じる
-   " inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
-
-   " <CR>: close popup and save indent.
-   inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-   function! s:my_cr_function()
-     return neocomplcache#smart_close_popup() . "\<CR>"
-   endfunction
-
-   "tabで補完候補の選択を行う
-   "inoremap <expr><TAB> pumvisible() ? "\<Down>" : "\<TAB>"
-   inoremap <expr><S-TAB> pumvisible() ? "\<Up>" : "\<S-TAB>"
-   "inoremap <expr><Down> pumvisible() ? "\<Down>" : "\<Down>"
-   "inoremap <expr><C-j> pumvisible() ? "\<Up>" : "\<Down>"
-   "inoremap <expr><Down>  neocomplcache#close_popup() . "\<Down>"
-
-   " <C-h>や<BS>を押したときに確実にポップアップを削除します
-   " inoremap <expr><C-h> neocomplcache#smart_close_popup().”\<C-h>”
-
-   " 現在選択している候補を確定します
-   " inoremap <expr><C-y> neocomplcache#close_popup()
-
-   " 現在選択している候補をキャンセルし、ポップアップを閉じます
-   " inoremap <expr><C-e> neocomplcache#cancel_popup()
-
-   """ Neosnippet
+   """ neosnippet
    " Plugin key-mappings.
    imap <C-k>     <Plug>(neosnippet_expand_or_jump)
    smap <C-k>     <Plug>(neosnippet_expand_or_jump)
- 
-   " SuperTab like snippets behavior.
-   "imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-   "\ "\<Plug>(neosnippet_expand_or_jump)"
-   "\: pumvisible() ? "\<C-n>" : "\<TAB>"
-   "smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-   "\ "\<Plug>(neosnippet_expand_or_jump)"
-   "\: "\<TAB>"
+
    imap <expr><TAB> neosnippet#jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
    smap <expr><TAB> neosnippet#jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
- 
+
    " For snippet_complete marker.
    if has('conceal')
      set conceallevel=2 concealcursor=i
    endif
 
 
-   """ unite.eim
+   """ unite.vim
    " start insert mode
    let g:unite_enable_start_insert=1
    let g:unite_source_file_mru_limit = 200
@@ -407,7 +390,7 @@ set nobackup
    " mappings
    nnoremap [unite]l :<C-u>Unite<Space>buffer<CR>
    nnoremap [unite]f :<C-u>Unite<Space>file<CR>
-   "nnoremap [unite]m :<C-u>Unite<Space>file_mru<CR>
+   nnoremap [unite]m :<C-u>Unite<Space>file_mru<CR>
    "nnoremap [unite]a :<C-u>Unite buffer file file_mru bookmark<CR>
    nnoremap [unite]r :<C-u>Unite<Space>register<CR>
    "nnoremap [unite]R :<C-u>UniteResume<CR>
@@ -443,20 +426,28 @@ set nobackup
      let g:unite_source_grep_recursive_opt = ''
    endif
 
-   """ solarized
+   """ color scheme - solarized
+   "set background=dark
+   "colorscheme solarized
+
+   """ color scheme - molokai
+   "set background=dark
+   "colorscheme molokai
+
+   """ color scheme - hybrid
+   let g:hybrid_use_Xresources = 1
    set background=dark
-   colorscheme solarized
+   colorscheme hybrid
 
    """ vimfiler
    let g:vimfiler_as_default_explorer=1
    let g:vimfiler_safe_mode_by_default=0
    " mapping
-   "cnoremap ee <C-u>VimFiler<Space>-split<Space>-simple<Space>-winwidth=35<Space>-no-quit
    nnoremap <Leader>ee :<C-u>VimFiler<Space>-split<Space>-simple<Space>-winwidth=35<Space>-no-quit<CR>
 
    """ lightline
    let g:lightline = {
-           \ 'colorscheme': 'solarized',
+           \ 'colorscheme': 'jellybeans',
            \ 'mode_map': {'c': 'NORMAL'},
            \ 'active': {
            \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ]
@@ -472,15 +463,15 @@ set nobackup
            \   'mode': 'MyMode'
            \ }
            \ }
- 
+
    function! MyModified()
      return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
    endfunction
- 
+
    function! MyReadonly()
      return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? 'x' : ''
    endfunction
- 
+
    function! MyFilename()
      return ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
            \ (&ft == 'vimfiler' ? vimfiler#get_status_string() :
@@ -489,7 +480,7 @@ set nobackup
            \ '' != expand('%') ? expand('%') : '[No Name]') .
            \ ('' != MyModified() ? ' ' . MyModified() : '')
    endfunction
- 
+
    function! MyFugitive()
      try
        if &ft !~? 'vimfiler\|gundo' && exists('*fugitive#head')
@@ -499,19 +490,19 @@ set nobackup
      endtry
      return ''
    endfunction
- 
+
    function! MyFileformat()
      return winwidth(0) > 70 ? &fileformat : ''
    endfunction
- 
+
    function! MyFiletype()
      return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
    endfunction
- 
+
    function! MyFileencoding()
      return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
    endfunction
- 
+
    function! MyMode()
      return winwidth(0) > 60 ? lightline#mode() : ''
    endfunction
@@ -570,13 +561,6 @@ set nobackup
    \   },
    \}
 
-   """ EasyMotion
-   nmap <Leader>s <Plug>(easymotion-s2)
-
-   """ syntastic
-   let g:syntastic_enable_signs=1
-   let g:syntastic_auto_loc_list=2
-
    """ smartword
    nmap w <Plug>(smartword-w)
    nmap b <Plug>(smartword-b)
@@ -587,25 +571,33 @@ set nobackup
    let g:clever_f_smart_case = 1
    let g:clever_f_use_migemo = 1
 
-   """ camelize
-   map <Leader>cc <Plug>(operator-camelize)
-   map <Leader>CC <Plug>(operator-decamelize)
-
    """ rsense
-   let g:rsenseHome = '/usr/local/Cellar/rsense/0.3/libexec'
+   " オムニ補完を有効化
    let g:rsenseUseOmniFunc = 1
 
-   if !exists('g:neocomplcache_omni_patterns')
-     let g:neocomplcache_omni_patterns = {}
+   if !exists('g:neocomplete#force_omni_input_patterns')
+     let g:neocomplete#force_omni_input_patterns = {}
    endif
-   let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+   let g:neocomplete#force_omni_input_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+
+   """ syntastic
+   " エラーをquickfixで表示
+   let g:syntastic_auto_loc_list=1
+   " ファイルを開いた時にチェック
+   let g:syntastic_check_on_open = 1
 
    """ rubocop
    " syntastic_mode_mapをactiveにするとバッファ保存時にsyntasticが走る
    " active_filetypesに、保存時にsyntasticを走らせるファイルタイプを指定する
    let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby'] }
-   let g:syntastic_ruby_checkers = ['rubocop']
+   "let g:syntastic_ruby_checkers = ['rubocop']
 
+   """ markdown
+   au BufRead,BufNewFile *.md set filetype=markdown
+   "let g:previm_open_cmd = 'open -a Firefox'
+
+   """ indentLine
+   let g:indentLine_faster = 1
 
  endfunction
 
