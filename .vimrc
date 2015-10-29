@@ -217,7 +217,6 @@ set nobackup
  " noremap <C-w> <Nop>
  " noremap! <C-w> <Nop>
  
-
  "------------------------------------------------------------
  " ファイルタイプごとの対応
  "------------------------------------------------------------
@@ -353,6 +352,8 @@ set nobackup
    let g:neocomplete#enable_ignore_case = 1
    " 大文字が入力されるまで大文字小文字の区別を無視する
    let g:neocomplete#enable_smart_case = 1
+   " 日本語入力時に無効化
+   let g:neocomplete#lock_iminsert = 1
    " 収集するキーワードパターン
    if !exists('g:neocomplete#keyword_patterns')
        let g:neocomplete#keyword_patterns = {}
@@ -366,6 +367,7 @@ set nobackup
    " 補完ポップアップを閉じる
    inoremap <expr><C-e>  pumvisible() ? neocomplete#close_popup() : "<End>"
 
+
    """ neosnippet
    " Plugin key-mappings.
    imap <C-k>     <Plug>(neosnippet_expand_or_jump)
@@ -378,7 +380,6 @@ set nobackup
    if has('conceal')
      set conceallevel=2 concealcursor=i
    endif
-
 
    """ unite.vim
    " start insert mode
