@@ -526,16 +526,17 @@ set nobackup
    let g:howm_fileencoding    = 'utf-8'
    let g:howm_fileformat      = 'unix'
 
-   let g:howm_filename          = 'memo_/%Y-%m-%d-%H%M%S.howm'
-   let g:QFixHowm_DiaryFile     = 'diary/%Y-%m-%d-000000.howm'
-   let g:QFixHowm_QuickMemoFile = "tmp__/0000-00-00-000000.howm"
+   let g:howm_filename          = 'memo_/%Y-%m-%d-%H%M%S.md'
+   let g:QFixHowm_DiaryFile     = 'diary/%Y-%m-%d-000000.md'
+   let g:QFixHowm_QuickMemoFile = "tmp__/0000-00-00-000000.md"
+
 
    " MRU保存先
    let g:QFixMRU_Filename     = '~/var/storage/Dropbox/docs/howm/.qfixmru'
    " MRU表示数
    let g:QFixMRU_Entries      = 30
    " MRUに登録しないファイル名(正規表現)
-   let g:QFixMRU_IgnoreFile   = '000000.howm'
+   let g:QFixMRU_IgnoreFile   = '000000.md'
 
    " メモの一覧表示
    " let g:QFixHowm_FileList = '**/????-??-??-?????0.howm'
@@ -546,6 +547,10 @@ set nobackup
 
    " unite mappings
    "nnoremap [unite]m :<C-u>Unite<Space>qfixhowm/new<Space>qfixhowm<Space>-hide-source-names<CR>
+
+   " markdown対応
+   let g:QFixHowm_FileType = 'markdown'
+   let g:QFixHowm_Title = '#'
 
    """ QickRun
    " <Leader>r で実行
@@ -595,7 +600,7 @@ set nobackup
 
    """ markdown
    au BufRead,BufNewFile *.md set filetype=markdown
-   "let g:previm_open_cmd = 'open -a Firefox'
+   autocmd FileType markdown,mkd nnoremap <Leader>r :<C-u>PrevimOpen<CR>
 
    """ indentLine
    let g:indentLine_faster = 1
