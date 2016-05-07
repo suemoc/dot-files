@@ -56,6 +56,29 @@ if [[ -f ~/.nvm/nvm.sh ]]; then
   export NODE_PATH=$npm_dir
 fi
 
+# pyenv
+export PYENV_ROOT="${HOME}/.pyenv"
+export PATH=${PYENV_ROOT}/bin:$PATH
+eval "$(pyenv init -)"
+
 # java default version
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
+# macvim
+case ${OSTYPE} in
+darwin*) # Mac OS X
+  function mvim () {
+    if [ -d /Applications/MacVim.app ]
+    then
+      [ ! -f $1 ] && touch $1
+      open -a MacVim $1
+    else
+      vim $1
+    fi
+  }
+  #alias vim='macvim'
+  ;;
+esac
+
+# docker
+# eval "$(docker-machine env default)"

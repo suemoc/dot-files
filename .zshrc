@@ -157,10 +157,21 @@ alias -g T='| tail'
 alias dgrep='find . -type f -print | xargs grep'
 
 alias up="cd ..; ls -l"
-alias st="git status"
 alias vi="vim"
 alias f="open ."
+alias tmux='tmux -u'
 
+# for git
+alias ga="git add"
+alias gb="git branch"
+alias gc="git commit"
+alias gco="git checkout"
+alias gf="git fetch --all"
+alias gm="git merge"
+alias gp="git push"
+alias gpo="git push -u origin"
+alias gs="git status"
+alias st="git status"
 
 #------------------------------------------------------------
 # Function
