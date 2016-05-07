@@ -32,6 +32,8 @@ set noswapfile
 set nowritebackup
 " バックアップをしない
 set nobackup
+" undoファイルを作らない
+set noundofile
 
  " バッファを保存しなくても他のバッファを表示できるようにする
  set hidden
@@ -155,6 +157,8 @@ set nobackup
  " インデント時に挿入されるスペースの数
  set shiftwidth=2
 
+ set formatoptions-=or
+
  "------------------------------------------------------------
  " Mappings
  "------------------------------------------------------------
@@ -217,6 +221,37 @@ set nobackup
  " noremap <C-w> <Nop>
  " noremap! <C-w> <Nop>
  
+ " Visualモードで数値インクリメント
+ vnoremap <c-a> <c-a>gv
+ vnoremap <c-x> <c-x>gv
+ 
+ " s keymap
+ nnoremap s <Nop>
+ nnoremap sj <C-w>j
+ nnoremap sk <C-w>k
+ nnoremap sl <C-w>l
+ nnoremap sh <C-w>h
+ nnoremap sJ <C-w>J
+ nnoremap sK <C-w>K
+ nnoremap sL <C-w>L
+ nnoremap sH <C-w>H
+ nnoremap sn gt
+ nnoremap sp gT
+ nnoremap sr <C-w>r
+ nnoremap s= <C-w>=
+ nnoremap sw <C-w>w
+ nnoremap so <C-w>_<C-w>|
+ nnoremap sO <C-w>=
+ nnoremap sN :<C-u>bn<CR>
+ nnoremap sP :<C-u>bp<CR>
+ nnoremap st :<C-u>tabnew<CR>
+ nnoremap ss :<C-u>sp<CR>
+ nnoremap sv :<C-u>vs<CR>
+ nnoremap sq :<C-u>q<CR>
+ nnoremap sQ :<C-u>bd<CR>
+
+ "nnoremap <C-H> :<C-U>Unite rails/controller<CR>
+
  "------------------------------------------------------------
  " ファイルタイプごとの対応
  "------------------------------------------------------------
@@ -231,6 +266,8 @@ set nobackup
    "autocmd BufWritePost *.php silent make | if len(getqflist()) != 1 | copen | else | cclose | endif
  augroup END
 
+ " python
+ let $PATH = expand("~/.pyenv/shims") . ":" . $PATH
 
  "------------------------------------------------------------
  " 自作コマンド
@@ -254,9 +291,10 @@ set nobackup
    "----------------------------
    " 読み込むプラグインの指定
    "----------------------------
+   call neobundle#begin(expand('~/.vim/bundle/'))
 
    """ Base
-   NeoBundle 'Shougo/neobundle.vim'
+   NeoBundleFetch 'Shougo/neobundle.vim'
    NeoBundle 'Shougo/vimproc.vim', {
    \ 'build' : {
    \     'windows' : 'make -f make_mingw32.mak',
@@ -284,6 +322,10 @@ set nobackup
    NeoBundle 'kana/vim-smartword.git'
    " 「:Alignta <Delimiter>」 で整列
    NeoBundle 'h1mesuke/vim-alignta'
+   " 自動保存
+   NeoBundle 'vim-scripts/vim-auto-save'
+   " カレントディレクトリを自動的にプロジェクトルートに設定
+   " NeoBundle 'airblade/vim-rooter'
 
    """ Unite
    NeoBundle 'Shougo/unite.vim'
@@ -292,6 +334,7 @@ set nobackup
    """ Display
    NeoBundle 'itchyny/lightline.vim'
    NeoBundle 'Yggdroot/indentLine'
+   NeoBundle 'kana/vim-submode'
    "NeoBundle 'altercation/vim-colors-solarized'
    "NeoBundle 'tomasr/molokai'
    NeoBundle 'w0ng/vim-hybrid'
@@ -300,12 +343,24 @@ set nobackup
    NeoBundle 'fuenor/qfixhowm'
    NeoBundle 'osyo-manga/unite-qfixhowm'
 
+   """ evernote
+   NeoBundle 'kakkyz81/evervim'
+
    """ Coding
    NeoBundle 'Townk/vim-autoclose'
    NeoBundle 'thinca/vim-quickrun'
-   " 保存時に静的解析
-   NeoBundle 'scrooloose/syntastic'
-
+   " 保存時に文法チェック
+   " NeoBundle 'scrooloose/syntastic'
+   NeoBundleLazy 'alpaca-tc/alpaca_tags', {
+   \    'depends': ['Shougo/vimproc.vim'],
+   \    'autoload' : {
+   \       'commands' : [
+   \          { 'name' : 'AlpacaTagsBundle', 'complete': 'customlist,alpaca_tags#complete_source' },
+   \          { 'name' : 'AlpacaTagsUpdate', 'complete': 'customlist,alpaca_tags#complete_source' },
+   \          'AlpacaTagsSet', 'AlpacaTagsCleanCache', 'AlpacaTagsEnable', 'AlpacaTagsDisable', 'AlpacaTagsKillProcess', 'AlpacaTagsProcessStatus',
+   \       ],
+   \    }
+   \ }
 
    """ ファイルタイプ別
    " html
@@ -315,7 +370,17 @@ set nobackup
    NeoBundle 'kchmck/vim-coffee-script'
 
    " ruby
-   NeoBundle "slim-template/vim-slim"
+   NeoBundle 'slim-template/vim-slim'
+   NeoBundle 'tpope/vim-rails'
+   NeoBundle 'basyura/unite-rails'
+   NeoBundle 'tpope/vim-endwise'
+
+   " python
+   NeoBundle 'lambdalisue/vim-pyenv'
+   " NeoBundle 'lambdalisue/vim-pyenv', {
+   "    \ 'autoload': {
+   "    \   'filetypes': ['python', 'python3']
+   "    \ }}
 
    " scala
    NeoBundle "derekwyatt/vim-scala"
@@ -341,6 +406,7 @@ set nobackup
    " メソッド定義元へのジャンプ
    NeoBundle 'szw/vim-tags'
 
+   call neobundle#end()
 
    "----------------------------
    " 読み込んだプラグインの設定
@@ -348,12 +414,14 @@ set nobackup
 
    """ neocomplete
    " 起動時に有効化
-   let g:neocomplete#enable_at_startup = 1
+   let g:neocomplete#enable_at_startup = 0
    let g:neocomplete#enable_ignore_case = 1
    " 大文字が入力されるまで大文字小文字の区別を無視する
    let g:neocomplete#enable_smart_case = 1
    " 日本語入力時に無効化
    let g:neocomplete#lock_iminsert = 1
+   " 最小補完文字数
+   " let g:neocomplete#min_keyword_length = 5
    " 収集するキーワードパターン
    if !exists('g:neocomplete#keyword_patterns')
        let g:neocomplete#keyword_patterns = {}
@@ -389,13 +457,19 @@ set nobackup
    nnoremap [unite] <Nop>
    nmap <Leader>f [unite]
    " mappings
-   nnoremap [unite]l :<C-u>Unite<Space>buffer<CR>
+   "nnoremap [unite]l :<C-u>Unite<Space>buffer<CR>
    nnoremap [unite]f :<C-u>Unite<Space>file<CR>
    nnoremap [unite]m :<C-u>Unite<Space>file_mru<CR>
    "nnoremap [unite]a :<C-u>Unite buffer file file_mru bookmark<CR>
    nnoremap [unite]r :<C-u>Unite<Space>register<CR>
    "nnoremap [unite]R :<C-u>UniteResume<CR>
    nnoremap [unite]b :<C-u>Unite bookmark<CR>
+
+   " short mapping
+   nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<CR>
+   nnoremap sB :<C-u>Unite buffer -buffer-name=file<CR>
+   nnoremap sm :<C-u>Unite<Space>file_mru<CR>
+   nnoremap sf :<C-u>Unite<Space>file_rec/async:!<CR>
 
    " プロジェクト下のファイル検索
    nnoremap <silent> <C-p> :<C-u>Unite<Space>file_rec/async:!<CR>
@@ -414,6 +488,7 @@ set nobackup
    function! s:unite_my_settings()"{{{
        " ESCでuniteを終了
        nmap <buffer> <ESC> <Plug>(unite_exit)
+       nmap <buffer> <C-j> <Plug>(unite_exit)
    endfunction"}}}
 
    " agでgrep検索
@@ -445,6 +520,7 @@ set nobackup
    let g:vimfiler_safe_mode_by_default=0
    " mapping
    nnoremap <Leader>ee :<C-u>VimFiler<Space>-split<Space>-simple<Space>-winwidth=35<Space>-no-quit<CR>
+   nnoremap se :<C-u>VimFilerBufferDir<Space>-simple<CR>
 
    """ lightline
    let g:lightline = {
@@ -587,24 +663,150 @@ set nobackup
    let g:neocomplete#force_omni_input_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 
    """ syntastic
+   " 保存時のチェックが重すぎるのでコメントアウト
+   " let g:syntastic_enable_signs=1
    " エラーをquickfixで表示
-   let g:syntastic_auto_loc_list=1
+   " let g:syntastic_auto_loc_list=1
    " ファイルを開いた時にチェック
-   let g:syntastic_check_on_open = 1
+   " let g:syntastic_check_on_open = 1
 
-   """ rubocop
    " syntastic_mode_mapをactiveにするとバッファ保存時にsyntasticが走る
    " active_filetypesに、保存時にsyntasticを走らせるファイルタイプを指定する
-   let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby'] }
-   "let g:syntastic_ruby_checkers = ['rubocop']
+   " let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby', 'javascript', 'coffee'] }
+   " let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby', 'javascript'] }
+
+   """ rubocop
+   " let g:syntastic_ruby_checkers = ['mri', 'rubocop']
+   " let g:syntastic_ruby_checkers = ['mri']
+
+   """ eslint (not bundle)
+   " let g:syntastic_javascript_checkers = ['eslint']
 
    """ markdown
    au BufRead,BufNewFile *.md set filetype=markdown
-   autocmd FileType markdown,mkd nnoremap <Leader>r :<C-u>PrevimOpen<CR>
+   "autocmd FileType markdown, mkd nnoremap <Leader>r :<C-u>PrevimOpen<CR>
+
+   " 見出しで折りたたまない
+   let g:vim_markdown_folding_disabled=1
 
    """ indentLine
    let g:indentLine_faster = 1
 
+   """ submode
+   call submode#enter_with('bufmove', 'n', '', 's>', '<C-w>>')
+   call submode#enter_with('bufmove', 'n', '', 's<', '<C-w><')
+   call submode#enter_with('bufmove', 'n', '', 's+', '<C-w>+')
+   call submode#enter_with('bufmove', 'n', '', 's-', '<C-w>-')
+   call submode#map('bufmove', 'n', '', '>', '<C-w>>')
+   call submode#map('bufmove', 'n', '', '<', '<C-w><')
+   call submode#map('bufmove', 'n', '', '+', '<C-w>+')
+   call submode#map('bufmove', 'n', '', '-', '<C-w>-')
+
+   """ alpaca tags
+   let g:alpaca_tags#config = {
+   \    '_' : '-R --sort=yes',
+   \    'ruby': '--languages=+Ruby',
+   \ }
+
+   augroup AlpacaTags
+     autocmd!
+     if exists(':AlpacaTags')
+       " autocmd BufWritePost Gemfile AlpacaTagsBundle
+       autocmd BufEnter * AlpacaTagsSet
+       " 保存と同時に更新
+       " autocmd BufWritePost * AlpacaTagsUpdate
+     endif
+   augroup END
+
+   """ auto-save
+   let g:auto_save = 1
+   let g:auto_save_in_insert_mode = 0
+   "let g:auto_save_silent = 1
+   " 保存する入力間隔
+   let g:auto_save_no_updatetime = 1
+   " updatetimeを設定すると以降のmapが効かなくなったのでコメントアウト
+   "set updatetime = 3000
+   
+   """ rooter
+   " let g:rooter_use_lcd = 1
+   " let g:rooter_patterns = ['tags', '.git', '.git/', 'Gemfile', 'Makefile']
+   " Automatically change the directory
+   "autocmd! BufEnter *.sh,*.rb,*.html,*.css,*.js :Rooter
+
+   """ rails
+   " util function
+   function! s:current_git()
+     return unite#util#path2project_directory(getcwd())
+   endfunction
+   function! s:detect_rails()
+     let root_dir = s:current_git()
+     return !empty(root_dir) && filereadable(root_dir . '/config/environments/development.rb')
+   endfunction
+
+   function! s:load_vim_rails()
+     if s:detect_rails()
+       let root_dir = s:current_git()
+   
+       silent doautocmd User Rails
+   
+       augroup DetectVimRails
+         autocmd!
+         autocmd BufNew,BufNewFile,BufRead * silent doautocmd User Rails
+       augroup END
+     endif
+   endfunction
+
+   let g:rails_default_file='config/database.yml'
+   let g:rails_level = 4
+   let g:rails_mappings=1
+   let g:rails_modelines=0
+   " let g:rails_some_option = 1
+   " let g:rails_statusline = 1
+   " let g:rails_subversion=0
+   " let g:rails_syntax = 1
+   " let g:rails_url='http://localhost:3000'
+   " let g:rails_ctags_arguments='--languages=-javascript'
+   " let g:rails_ctags_arguments = ''
+   function! SetUpRailsSetting()
+     nnoremap <buffer><Leader>r :R<CR>
+     nnoremap <buffer><Leader>a :A<CR>
+     nnoremap <buffer><Leader>m :Rmodel<Space>
+     nnoremap <buffer><Leader>c :Rcontroller<Space>
+     nnoremap <buffer><Leader>v :Rview<Space>
+     nnoremap <buffer><Leader>p :Rpreview<CR>
+   endfunction
+   
+   """ unite-rails
+   function! UniteRailsSetting()
+     nnoremap <buffer><C-H><C-H><C-H>  :<C-U>Unite rails/view<CR>
+     nnoremap <buffer><C-H><C-H>       :<C-U>Unite rails/model<CR>
+     nnoremap <buffer><C-H>            :<C-U>Unite rails/controller<CR>
+     nnoremap <buffer><C-H>c           :<C-U>Unite rails/config<CR>
+     nnoremap <buffer><C-H>s           :<C-U>Unite rails/spec<CR>
+     nnoremap <buffer><C-H>m           :<C-U>Unite rails/db -input=migrate<CR>
+     nnoremap <buffer><C-H>l           :<C-U>Unite rails/lib<CR>
+     nnoremap <buffer><expr><C-H>g     ':e '.b:rails_root.'/Gemfile<CR>'
+     nnoremap <buffer><expr><C-H>r     ':e '.b:rails_root.'/config/routes.rb<CR>'
+     nnoremap <buffer><expr><C-H>se    ':e '.b:rails_root.'/db/seeds.rb<CR>'
+     nnoremap <buffer><C-H>ra          :<C-U>Unite rails/rake<CR>
+     nnoremap <buffer><C-H>h           :<C-U>Unite rails/heroku<CR>
+   endfunction
+
+   aug MyAutoCmd
+     au User Rails call SetUpRailsSetting()
+     au User Rails call UniteRailsSetting()
+   aug END
+
+   call s:load_vim_rails()
+
+   """ open-browser
+   let g:netrw_nogx = 1 " disable netrw's gx mapping.
+   nmap gx <Plug>(openbrowser-smart-search)
+   vmap gx <Plug>(openbrowser-smart-search)
+
+   """ evervim
+   " ノートのソート順
+   let g:evervim_sortbooks = 'serviceUpdated desc'
  endfunction
 
  " NeoBundle がインストールされているなら LoadBundles() を呼び出す
@@ -616,7 +818,6 @@ set nobackup
        set runtimepath+=~/.vim/bundle/neobundle.vim/
      endif
      try
-       call neobundle#rc(expand('~/.vim/bundle/'))
        call s:LoadBundles()
      catch
        call s:WithoutBundles()
@@ -625,9 +826,20 @@ set nobackup
      call s:WithoutBundles()
    endif
 
+   """ endwise
+   "let g:endwise_no_mappings=1
+
  endfunction
 
  call s:InitNeoBundle()
+
+
+ "------------------------------------------------------------
+ " 環境ごとの設定読み込み
+ "------------------------------------------------------------
+ if filereadable(expand('~/.vimrc.local'))
+   source ~/.vimrc.local
+ endif
 
 
  "------------------------------------------------------------
