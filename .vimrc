@@ -40,6 +40,9 @@ set noundofile
  " バッファが変更されているとき、コマンドをエラーにするのでなく、保存する
  " かどうか確認を求める
  set confirm
+ " 外部のエディタで編集中のファイルが変更されたら、自動的に読み直す
+ " ファイルが削除された場合は読み直さない
+ set autoread
 
  "------------------------------------------------------------
  " Move
@@ -179,6 +182,8 @@ set noundofile
  "inoremap <silent> <C-j> j
  nnoremap <C-j> <Nop>
  inoremap <silent> <C-j> <ESC>
+ inoremap <silent> jj <ESC>
+
 
  " 挿入モードでのカーソル移動
  "inoremap <C-j> <Down>
@@ -251,6 +256,7 @@ set noundofile
  nnoremap sQ :<C-u>bd<CR>
 
  "nnoremap <C-H> :<C-U>Unite rails/controller<CR>
+ 
 
  "------------------------------------------------------------
  " ファイルタイプごとの対応
@@ -265,9 +271,6 @@ set noundofile
    "autocmd FileType php set makeprg=php\ -l\ %
    "autocmd BufWritePost *.php silent make | if len(getqflist()) != 1 | copen | else | cclose | endif
  augroup END
-
- " python
- let $PATH = expand("~/.pyenv/shims") . ":" . $PATH
 
  "------------------------------------------------------------
  " 自作コマンド
@@ -325,7 +328,7 @@ set noundofile
    " 自動保存
    NeoBundle 'vim-scripts/vim-auto-save'
    " カレントディレクトリを自動的にプロジェクトルートに設定
-   " NeoBundle 'airblade/vim-rooter'
+   NeoBundle 'airblade/vim-rooter'
 
    """ Unite
    NeoBundle 'Shougo/unite.vim'
@@ -335,16 +338,11 @@ set noundofile
    NeoBundle 'itchyny/lightline.vim'
    NeoBundle 'Yggdroot/indentLine'
    NeoBundle 'kana/vim-submode'
-   "NeoBundle 'altercation/vim-colors-solarized'
-   "NeoBundle 'tomasr/molokai'
    NeoBundle 'w0ng/vim-hybrid'
 
-   """ qfixhowm
-   NeoBundle 'fuenor/qfixhowm'
-   NeoBundle 'osyo-manga/unite-qfixhowm'
-
-   """ evernote
-   NeoBundle 'kakkyz81/evervim'
+   """ memolist
+   NeoBundle 'fuenor/qfixgrep'
+   NeoBundle 'glidenote/memolist.vim'
 
    """ Coding
    NeoBundle 'Townk/vim-autoclose'
@@ -375,13 +373,6 @@ set noundofile
    NeoBundle 'basyura/unite-rails'
    NeoBundle 'tpope/vim-endwise'
 
-   " python
-   NeoBundle 'lambdalisue/vim-pyenv'
-   " NeoBundle 'lambdalisue/vim-pyenv', {
-   "    \ 'autoload': {
-   "    \   'filetypes': ['python', 'python3']
-   "    \ }}
-
    " scala
    NeoBundle "derekwyatt/vim-scala"
 
@@ -395,7 +386,7 @@ set noundofile
    \ }
 
    " Markdown
-   NeoBundle 'plasticboy/vim-markdown'
+   " NeoBundle 'plasticboy/vim-markdown'
    NeoBundle 'kannokanno/previm'
    NeoBundle 'tyru/open-browser.vim'
 
@@ -502,14 +493,6 @@ set noundofile
      let g:unite_source_grep_recursive_opt = ''
    endif
 
-   """ color scheme - solarized
-   "set background=dark
-   "colorscheme solarized
-
-   """ color scheme - molokai
-   "set background=dark
-   "colorscheme molokai
-
    """ color scheme - hybrid
    let g:hybrid_use_Xresources = 1
    set background=dark
@@ -592,41 +575,6 @@ set noundofile
          \ }
    " keymap
    let g:user_emmet_leader_key='<c-y>'
-
-   """ QFixHowm
-   "QFixHowmキーマップ
-   let g:QFixHowm_Key = 'g'
-
-   "メモファイルの保存先
-   let g:howm_dir             = '~/var/storage/Dropbox/docs/howm'
-   let g:howm_fileencoding    = 'utf-8'
-   let g:howm_fileformat      = 'unix'
-
-   let g:howm_filename          = 'memo_/%Y-%m-%d-%H%M%S.md'
-   let g:QFixHowm_DiaryFile     = 'diary/%Y-%m-%d-000000.md'
-   let g:QFixHowm_QuickMemoFile = "tmp__/0000-00-00-000000.md"
-
-
-   " MRU保存先
-   let g:QFixMRU_Filename     = '~/var/storage/Dropbox/docs/howm/.qfixmru'
-   " MRU表示数
-   let g:QFixMRU_Entries      = 30
-   " MRUに登録しないファイル名(正規表現)
-   let g:QFixMRU_IgnoreFile   = '000000.md'
-
-   " メモの一覧表示
-   " let g:QFixHowm_FileList = '**/????-??-??-?????0.howm'
-   " let g:QFixHowm_TitleListCache = 0
-
-   " QFixList表示でファイルへ移動したらウィンドウを閉じる
-   let g:QFixHowm_ListCloseOnJump = 1
-
-   " unite mappings
-   "nnoremap [unite]m :<C-u>Unite<Space>qfixhowm/new<Space>qfixhowm<Space>-hide-source-names<CR>
-
-   " markdown対応
-   let g:QFixHowm_FileType = 'markdown'
-   let g:QFixHowm_Title = '#'
 
    """ QickRun
    " <Leader>r で実行
@@ -728,10 +676,10 @@ set noundofile
    "set updatetime = 3000
    
    """ rooter
-   " let g:rooter_use_lcd = 1
-   " let g:rooter_patterns = ['tags', '.git', '.git/', 'Gemfile', 'Makefile']
+   let g:rooter_use_lcd = 1
+   let g:rooter_patterns = ['tags', '.git', '.git/', 'Gemfile', 'Makefile']
    " Automatically change the directory
-   "autocmd! BufEnter *.sh,*.rb,*.html,*.css,*.js :Rooter
+   autocmd! BufEnter *.sh,*.rb,*.html,*.css,*.js :Rooter
 
    """ rails
    " util function
@@ -804,9 +752,32 @@ set noundofile
    nmap gx <Plug>(openbrowser-smart-search)
    vmap gx <Plug>(openbrowser-smart-search)
 
-   """ evervim
-   " ノートのソート順
-   let g:evervim_sortbooks = 'serviceUpdated desc'
+   """ endwise
+   "let g:endwise_no_mappings=1
+
+   """ memolist
+   function! MyMemoGrep()
+     execute 'lcd' g:memolist_path
+     execute 'Unite' 'grep:.' g:memolist_unite_option
+   endfunction
+   command! MyMemoGrep :call MyMemoGrep()
+
+   let g:memolist_path = "~/var/storage/Dropbox/docs/memo"
+   let g:memolist_memo_suffix = "md"
+   let g:memolist_memo_date = "%Y-%m-%d %H:%M"
+   let g:memolist_template_dir_path = '~/var/storage/Dropbox/docs/templates/memo'
+
+   let g:memolist_unite = 1
+   let g:memolist_unite_source = "file_rec"
+   "let g:memolist_unite_option = "-auto-preview -start-insert"
+   let g:memolist_unite_option = "-auto-preview -start-insert -auto-resize"
+   " メモ一覧を編集時刻順に表示
+   call unite#custom_source('file_rec', 'sorters', ['sorter_ftime', 'sorter_reverse'])
+
+   nnoremap mn :<C-u>MemoNew<CR>
+   nnoremap ml :<C-u>MemoList<CR>
+   nnoremap mg :<C-u>MyMemoGrep<CR>
+
  endfunction
 
  " NeoBundle がインストールされているなら LoadBundles() を呼び出す
@@ -825,10 +796,6 @@ set noundofile
    else
      call s:WithoutBundles()
    endif
-
-   """ endwise
-   "let g:endwise_no_mappings=1
-
  endfunction
 
  call s:InitNeoBundle()

@@ -173,6 +173,9 @@ alias gpo="git push -u origin"
 alias gs="git status"
 alias st="git status"
 
+# coreutils
+alias readlink="greadlink"
+
 #------------------------------------------------------------
 # Function
 #------------------------------------------------------------

@@ -49,17 +49,16 @@ export PATH=./vendor/bin:$PATH
 alias be='bundle exec'
 
 # node
-if [[ -f ~/.nvm/nvm.sh ]]; then
-  [[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh
-  nvm use default
-  npm_dir=${NVM_PATH}_modules
-  export NODE_PATH=$npm_dir
-fi
+export PATH=$PATH:$HOME/.ndenv/bin
+eval "$(ndenv init -)"
 
 # pyenv
 export PYENV_ROOT="${HOME}/.pyenv"
 export PATH=${PYENV_ROOT}/bin:$PATH
 eval "$(pyenv init -)"
+
+# direnv
+eval "$(direnv hook zsh)"
 
 # java default version
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
@@ -82,3 +81,47 @@ esac
 
 # docker
 # eval "$(docker-machine env default)"
+
+# peco
+# http://k0kubun.hatenablog.com/entry/2014/07/06/033336
+function peco-history-selection() {
+    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
+zle -N peco-history-selection
+bindkey '^R' peco-history-selection
+
+function peco-src() {
+    local selected_dir=$(ghq list | peco --query "$LBUFFER")
+    if [ -n "$selected_dir" ]; then
+        BUFFER="cd $(ghq root)/${selected_dir}"
+        zle accept-line
+    fi
+    zle redisplay
+}
+zle -N peco-src
+stty -ixon
+bindkey '^s' peco-src
+
+function peco-find-file() {
+    if git rev-parse 2> /dev/null; then
+        source_files=$(git ls-files)
+    else
+        source_files=$(find . -type f)
+    fi
+    selected_files=$(echo $source_files | peco --prompt "[find file]")
+
+    BUFFER="${BUFFER}$(echo $selected_files | tr '\n' ' ')"
+    CURSOR=$#BUFFER
+    zle redisplay
+}
+zle -N peco-find-file
+bindkey '^q' peco-find-file
+
+alias -g B='`git branch | peco | sed -e "s/^\*[ ]*//g"`'
+alias -g P='| peco'
+
+# ghq
+# alias gg='cd $(ghq root)/$(ghq list | peco)'
+alias ggo='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'

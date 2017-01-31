@@ -1,10 +1,40 @@
+set visualbell
+set noerrorbells
+
+" ============================================================================
+" Editing
+" ============================================================================
+
+" Escape
 inoremap <c-]> <esc>
 inoremap <C-j> <esc>
-
-vnoremap v $h
 
 nnoremap 0 $
 nnoremap 1 0
 
-set visualbell
-set noerrorbells
+vnoremap v $h
+
+
+" ============================================================================
+" Editor control
+" ============================================================================
+
+" 直前のファイルを開く
+" nnoremap <Space>h :<C-u>action RecentFiles<CR> " smと同じなので使わない
+
+" Reload .ideavimrc
+nnoremap <Space>s. :<C-u>source ~/.ideavimrc<CR>
+
+" s keymap
+nnoremap sj <C-w>j
+nnoremap sk <C-w>k
+nnoremap sl <C-w>l
+nnoremap sh <C-w>h
+nnoremap sn gt
+nnoremap sp gT
+nnoremap ss :<C-u>sp<CR>
+nnoremap sv :<C-u>vs<CR>
+nnoremap sq :<C-u>q<CR>
+nnoremap sQ :<C-u>bd<CR>
+nnoremap sf :<C-u>action GotoFile<CR>
+nnoremap sm :<C-u>action RecentFiles<CR>
