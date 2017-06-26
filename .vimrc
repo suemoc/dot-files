@@ -178,18 +178,11 @@ set noundofile
  nnoremap <Leader>h :<C-u>b<Space>#<CR>
 
  " insertモードを抜ける
- "inoremap <silent> jj <ESC>
- "inoremap <silent> <C-j> j
  nnoremap <C-j> <Nop>
  inoremap <silent> <C-j> <ESC>
  inoremap <silent> jj <ESC>
 
-
  " 挿入モードでのカーソル移動
- "inoremap <C-j> <Down>
- "inoremap <C-k> <Up>
- "inoremap <C-h> <Left>
- "inoremap <C-l> <Right>
  inoremap <C-a> <Home>
  inoremap <C-e> <End>
  inoremap <C-d> <Del>
@@ -210,22 +203,11 @@ set noundofile
  " 検索結果のハイライトをEsc連打でクリアする
  nnoremap <ESC><ESC> :nohlsearch<CR>
 
- " 自動的に閉じ括弧
- "imap { {}<Left>
- "imap [ []<Left>
- "imap ( ()<Left>
-
  " クリップボードにコピー
  vnoremap gy "*y
  " クリップボードから書式を無視してペースト
  nnoremap gp :<C-u>a!<CR>
 
- " タブ移動に使うkeymapを空けておく
- " noremap <C-q> <Nop>
- " noremap! <C-q> <Nop>
- " noremap <C-w> <Nop>
- " noremap! <C-w> <Nop>
- 
  " Visualモードで数値インクリメント
  vnoremap <c-a> <c-a>gv
  vnoremap <c-x> <c-x>gv
@@ -255,8 +237,6 @@ set noundofile
  nnoremap sq :<C-u>q<CR>
  nnoremap sQ :<C-u>bd<CR>
 
- "nnoremap <C-H> :<C-U>Unite rails/controller<CR>
- 
 
  "------------------------------------------------------------
  " ファイルタイプごとの対応
@@ -267,10 +247,8 @@ set noundofile
    autocmd!
    " 辞書
    autocmd FileType php,ctp :set dictionary=~/.vim/dict/php.dict
-   " syntax check
-   "autocmd FileType php set makeprg=php\ -l\ %
-   "autocmd BufWritePost *.php silent make | if len(getqflist()) != 1 | copen | else | cclose | endif
  augroup END
+
 
  "------------------------------------------------------------
  " 自作コマンド
@@ -373,9 +351,6 @@ set noundofile
    NeoBundle 'basyura/unite-rails'
    NeoBundle 'tpope/vim-endwise'
 
-   " scala
-   NeoBundle "derekwyatt/vim-scala"
-
    NeoBundle 'marcus/rsense', {
    \ 'autoload': {
    \   'filetypes': 'ruby',
@@ -385,8 +360,10 @@ set noundofile
    \ 'depends': ['Shougo/neocomplete.vim', 'marcus/rsense'],
    \ }
 
+   " scala
+   NeoBundle "derekwyatt/vim-scala"
+
    " Markdown
-   " NeoBundle 'plasticboy/vim-markdown'
    NeoBundle 'kannokanno/previm'
    NeoBundle 'tyru/open-browser.vim'
 
@@ -444,19 +421,8 @@ set noundofile
    " start insert mode
    let g:unite_enable_start_insert=1
    let g:unite_source_file_mru_limit = 200
-   " unite prefix key
-   nnoremap [unite] <Nop>
-   nmap <Leader>f [unite]
-   " mappings
-   "nnoremap [unite]l :<C-u>Unite<Space>buffer<CR>
-   nnoremap [unite]f :<C-u>Unite<Space>file<CR>
-   nnoremap [unite]m :<C-u>Unite<Space>file_mru<CR>
-   "nnoremap [unite]a :<C-u>Unite buffer file file_mru bookmark<CR>
-   nnoremap [unite]r :<C-u>Unite<Space>register<CR>
-   "nnoremap [unite]R :<C-u>UniteResume<CR>
-   nnoremap [unite]b :<C-u>Unite bookmark<CR>
 
-   " short mapping
+   " mapping
    nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<CR>
    nnoremap sB :<C-u>Unite buffer -buffer-name=file<CR>
    nnoremap sm :<C-u>Unite<Space>file_mru<CR>
@@ -483,7 +449,6 @@ set noundofile
    endfunction"}}}
 
    " agでgrep検索
-   nnoremap [unite]g :<C-u>Unite<Space>grep:. -buffer-name=search-buffer<CR>
    nnoremap <silent> <C-f> :<C-u>Unite<Space>grep:. -buffer-name=search-buffer<CR>
 
    " unite grep に ag(The Silver Searcher) を使う
@@ -708,13 +673,6 @@ set noundofile
    let g:rails_level = 4
    let g:rails_mappings=1
    let g:rails_modelines=0
-   " let g:rails_some_option = 1
-   " let g:rails_statusline = 1
-   " let g:rails_subversion=0
-   " let g:rails_syntax = 1
-   " let g:rails_url='http://localhost:3000'
-   " let g:rails_ctags_arguments='--languages=-javascript'
-   " let g:rails_ctags_arguments = ''
    function! SetUpRailsSetting()
      nnoremap <buffer><Leader>r :R<CR>
      nnoremap <buffer><Leader>a :A<CR>
@@ -762,14 +720,13 @@ set noundofile
    endfunction
    command! MyMemoGrep :call MyMemoGrep()
 
-   let g:memolist_path = "~/var/storage/Dropbox/docs/memo"
+   let g:memolist_path = "~/docs/memo"
    let g:memolist_memo_suffix = "md"
    let g:memolist_memo_date = "%Y-%m-%d %H:%M"
-   let g:memolist_template_dir_path = '~/var/storage/Dropbox/docs/templates/memo'
+   let g:memolist_template_dir_path = '~/docs/templates/memo'
 
    let g:memolist_unite = 1
    let g:memolist_unite_source = "file_rec"
-   "let g:memolist_unite_option = "-auto-preview -start-insert"
    let g:memolist_unite_option = "-auto-preview -start-insert -auto-resize"
    " メモ一覧を編集時刻順に表示
    call unite#custom_source('file_rec', 'sorters', ['sorter_ftime', 'sorter_reverse'])

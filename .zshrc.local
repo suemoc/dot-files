@@ -75,12 +75,8 @@ darwin*) # Mac OS X
       vim $1
     fi
   }
-  #alias vim='macvim'
   ;;
 esac
-
-# docker
-# eval "$(docker-machine env default)"
 
 # peco
 # http://k0kubun.hatenablog.com/entry/2014/07/06/033336

@@ -143,7 +143,6 @@ esac
 alias l='ls -l'
 alias ll='ls -l'
 alias la='ls -la'
-#alias lla='ls -al'
 alias llh='ls -hla'
 
 alias po='popd'
@@ -229,5 +228,5 @@ jj () {
 #------------------------------------------------------------
 # 個別設定
 #------------------------------------------------------------
-[ -f ~/.zshrc.mine ] && source ~/.zshrc.mine
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
 

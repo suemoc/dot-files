@@ -1,1 +1,4 @@
 :set shiftwidth=4
+
+nnoremap <C-j> <Nop>
+inoremap <silent> <C-j> <ESC>
