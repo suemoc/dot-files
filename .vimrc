@@ -211,7 +211,11 @@ set noundofile
  " Visualモードで数値インクリメント
  vnoremap <c-a> <c-a>gv
  vnoremap <c-x> <c-x>gv
- 
+
+ " コロンセミコロン入れ替え (for US)
+ noremap ; :
+ noremap : ;
+
  " s keymap
  nnoremap s <Nop>
  nnoremap sj <C-w>j
@@ -366,6 +370,9 @@ set noundofile
    " Markdown
    NeoBundle 'kannokanno/previm'
    NeoBundle 'tyru/open-browser.vim'
+
+   " JSON
+   NeoBundle 'elzr/vim-json'
 
    """ Test
    " ドキュメント参照
@@ -721,7 +728,7 @@ set noundofile
    command! MyMemoGrep :call MyMemoGrep()
 
    let g:memolist_path = "~/docs/memo"
-   let g:memolist_memo_suffix = "md"
+   let g:memolist_memo_suffix = "txt"
    let g:memolist_memo_date = "%Y-%m-%d %H:%M"
    let g:memolist_template_dir_path = '~/docs/templates/memo'
 
@@ -734,6 +741,9 @@ set noundofile
    nnoremap mn :<C-u>MemoNew<CR>
    nnoremap ml :<C-u>MemoList<CR>
    nnoremap mg :<C-u>MyMemoGrep<CR>
+
+   """ json
+   let g:vim_json_syntax_conceal = 0
 
  endfunction
 

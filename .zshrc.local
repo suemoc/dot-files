@@ -17,7 +17,6 @@ alias gv="groovy"
 ##=============================
 
 if [ -f ~/.zsh/z.sh ]; then
-  _Z_CMD=j
   source ~/.zsh/z.sh
   precmd() {
     _z --add "$(pwd -P)"
@@ -114,6 +113,24 @@ function peco-find-file() {
 }
 zle -N peco-find-file
 bindkey '^q' peco-find-file
+
+function peco-z-search
+{
+  which peco z > /dev/null
+  if [ $? -ne 0 ]; then
+    echo "Please install peco and z"
+    return 1
+  fi
+  local res=$(z | sort -rn | cut -c 12- | peco)
+  if [ -n "$res" ]; then
+    BUFFER+="cd $res"
+    zle accept-line
+  else
+    return 1
+  fi
+}
+zle -N peco-z-search
+bindkey '^f' peco-z-search
 
 alias -g B='`git branch | peco | sed -e "s/^\*[ ]*//g"`'
 alias -g P='| peco'

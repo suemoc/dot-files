@@ -2,3 +2,6 @@
 
 nnoremap <C-j> <Nop>
 inoremap <silent> <C-j> <ESC>
+
+noremap ; :
+noremap : ;
