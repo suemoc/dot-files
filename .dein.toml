@@ -1,0 +1,369 @@
+# Base
+[[plugins]]
+repo = 'Shougo/dein.vim'
+
+[[plugins]]
+repo = 'Shougo/vimproc.vim'
+hook_post_update = '''
+  if dein#util#_is_windows()
+    let cmd = 'tools\\update-dll-mingw'
+  elseif dein#util#_is_cygwin()
+    let cmd = 'make -f make_cygwin.mak'
+  elseif executable('gmake')
+    let cmd = 'gmake'
+  else
+    let cmd = 'make'
+  endif
+  let g:dein#plugin.build = cmd
+'''
+
+[[plugins]]
+repo = 'Shougo/unite.vim'
+hook_add = '''
+  " start insert mode
+  let g:unite_enable_start_insert=1
+  let g:unite_source_file_mru_limit = 200
+
+  " mapping
+  nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<CR>
+  nnoremap sB :<C-u>Unite buffer -buffer-name=file<CR>
+  nnoremap sm :<C-u>Unite<Space>file_mru<CR>
+  nnoremap sf :<C-u>Unite<Space>file_rec/async:!<CR>
+
+  " プロジェクト下のファイル検索
+  nnoremap <silent> <C-p> :<C-u>Unite<Space>file_rec/async:!<CR>
+  " ファイル一覧をキャッシュするファイル数の最小値・最大値
+  let g:unite_source_rec_min_cache_files = 100
+  let g:unite_source_rec_max_cache_files = 1000
+  " 画像を検索しない
+  call unite#custom#source('file_rec/async', 'ignore_pattern', '\(png\|gif\|jpeg\|jpg\)$')
+
+  " 最近開いたファイルを検索
+  " C-mがautocloseと競合するため一時コメントアウト
+  "nnoremap <silent> <C-m> :<C-u>Unite<Space>file_mru<CR>
+
+  "unite.vimを開いている間のキーマッピング
+  autocmd FileType unite call s:unite_my_settings()
+  function! s:unite_my_settings()"{{{
+      " ESCでuniteを終了
+      nmap <buffer> <ESC> <Plug>(unite_exit)
+      nmap <buffer> <C-j> <Plug>(unite_exit)
+  endfunction"}}}
+
+  " agでgrep検索
+  nnoremap <silent> <C-f> :<C-u>Unite<Space>grep:. -buffer-name=search-buffer<CR>
+
+  " unite grep に ag(The Silver Searcher) を使う
+  if executable('ag')
+    let g:unite_source_grep_command = 'ag'
+    let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
+    let g:unite_source_grep_recursive_opt = ''
+  endif
+'''
+
+[[plugins]]
+repo = 'Shougo/neomru.vim'
+on_source = ['unite.vim']
+
+[[plugins]]
+repo = 'Shougo/vimfiler.vim'
+hook_add = '''
+  let g:vimfiler_as_default_explorer=1
+  let g:vimfiler_safe_mode_by_default=0
+
+  " mapping
+  nnoremap <Leader>ee :<C-u>VimFiler<Space>-split<Space>-simple<Space>-winwidth=35<Space>-no-quit<CR>
+  nnoremap se :<C-u>VimFilerBufferDir<Space>-simple<CR>
+'''
+
+# Utility
+[[plugins]] # テキストオブジェクトを囲む/削除する
+repo = 'tpope/vim-surround'
+[[plugins]] # fで日本語ヨミ検索 & f連打で次の候補
+repo = 'rhysd/clever-f.vim'
+hook_add = '''
+  " 大文字を入力した場合のみ大文字小文字を区別する
+  let g:clever_f_smart_case = 1
+  let g:clever_f_use_migemo = 1
+'''
+[[plugins]] # 単語移動をスマートに
+repo = 'kana/vim-smartword.git'
+hook_add = '''
+  nmap w <Plug>(smartword-w)
+  nmap b <Plug>(smartword-b)
+  nmap e <Plug>(smartword-e)
+'''
+[[plugins]] # 「:Alignta <Delimiter>」 で整列
+repo = 'h1mesuke/vim-alignta'
+[[plugins]] # 自動保存
+repo = 'vim-scripts/vim-auto-save'
+hook_add = '''
+  let g:auto_save = 1
+  let g:auto_save_in_insert_mode = 0
+  "let g:auto_save_silent = 1
+  " 保存する入力間隔
+  let g:auto_save_no_updatetime = 1
+'''
+[[plugins]] # カレントディレクトリを自動的にプロジェクトルートに設定
+repo = 'airblade/vim-rooter'
+hook_add = '''
+  let g:rooter_use_lcd = 1
+  let g:rooter_patterns = ['tags', '.git', '.git/', 'Gemfile', 'Makefile']
+  " Automatically change the directory
+  autocmd! BufEnter *.sh,*.rb,*.html,*.css,*.js :Rooter
+'''
+
+# Display
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+hook_add = '''
+  let g:lightline = {
+          \ 'colorscheme': 'jellybeans',
+          \ 'mode_map': {'c': 'NORMAL'},
+          \ 'active': {
+          \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ]
+          \ },
+          \ 'component_function': {
+          \   'modified': 'MyModified',
+          \   'readonly': 'MyReadonly',
+          \   'fugitive': 'MyFugitive',
+          \   'filename': 'MyFilename',
+          \   'fileformat': 'MyFileformat',
+          \   'filetype': 'MyFiletype',
+          \   'fileencoding': 'MyFileencoding',
+          \   'mode': 'MyMode'
+          \ }
+          \ }
+
+  function! MyModified()
+    return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+  endfunction
+
+  function! MyReadonly()
+    return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? 'x' : ''
+  endfunction
+
+  function! MyFilename()
+    return ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
+          \ (&ft == 'vimfiler' ? vimfiler#get_status_string() :
+          \  &ft == 'unite' ? unite#get_status_string() :
+          \  &ft == 'vimshell' ? vimshell#get_status_string() :
+          \ '' != expand('%') ? expand('%') : '[No Name]') .
+          \ ('' != MyModified() ? ' ' . MyModified() : '')
+  endfunction
+
+  function! MyFugitive()
+    try
+      if &ft !~? 'vimfiler\|gundo' && exists('*fugitive#head')
+        return fugitive#head()
+      endif
+    catch
+    endtry
+    return ''
+  endfunction
+
+  function! MyFileformat()
+    return winwidth(0) > 70 ? &fileformat : ''
+  endfunction
+
+  function! MyFiletype()
+    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
+  endfunction
+
+  function! MyFileencoding()
+    return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+  endfunction
+
+  function! MyMode()
+    return winwidth(0) > 60 ? lightline#mode() : ''
+  endfunction
+'''
+[[plugins]] # インデント可視化
+repo = 'Yggdroot/indentLine'
+hook_add = '''
+  let g:indentLine_faster = 1
+'''
+[[plugins]] # ウィンドウサイズ変更モードの作成
+repo = 'kana/vim-submode'
+hook_add = '''
+  call submode#enter_with('bufmove', 'n', '', 's>', '<C-w>>')
+  call submode#enter_with('bufmove', 'n', '', 's<', '<C-w><')
+  call submode#enter_with('bufmove', 'n', '', 's+', '<C-w>+')
+  call submode#enter_with('bufmove', 'n', '', 's-', '<C-w>-')
+  call submode#map('bufmove', 'n', '', '>', '<C-w>>')
+  call submode#map('bufmove', 'n', '', '<', '<C-w><')
+  call submode#map('bufmove', 'n', '', '+', '<C-w>+')
+  call submode#map('bufmove', 'n', '', '-', '<C-w>-')
+'''
+[[plugins]] # カラースキーマ
+repo = 'w0ng/vim-hybrid'
+hook_add = '''
+  let g:hybrid_use_Xresources = 1
+  set background=dark
+  colorscheme hybrid
+'''
+
+# Memo
+[[plugins]]
+repo = 'glidenote/memolist.vim'
+hook_add = '''
+  function! MyMemoGrep()
+    execute 'lcd' g:memolist_path
+    execute 'Unite' 'grep:.' g:memolist_unite_option
+  endfunction
+  command! MyMemoGrep :call MyMemoGrep()
+
+  let g:memolist_path = "~/docs/memo"
+  let g:memolist_memo_suffix = "txt"
+  let g:memolist_memo_date = "%Y-%m-%d %H:%M"
+  let g:memolist_template_dir_path = '~/docs/templates/memo'
+
+  let g:memolist_unite = 1
+  let g:memolist_unite_source = "file_rec"
+  let g:memolist_unite_option = "-auto-preview -start-insert -auto-resize"
+  " メモ一覧を編集時刻順に表示
+  call unite#custom_source('file_rec', 'sorters', ['sorter_ftime', 'sorter_reverse'])
+
+  nnoremap mn :<C-u>MemoNew<CR>
+  nnoremap ml :<C-u>MemoList<CR>
+  nnoremap mg :<C-u>MyMemoGrep<CR>
+'''
+[[plugins]]
+repo = 'fuenor/qfixgrep'
+on_source = ['memolist.vim']
+
+# Coding
+[[plugins]]
+repo = 'Townk/vim-autoclose'
+[[plugins]]
+repo = 'thinca/vim-quickrun'
+hook_add = '''
+  " <Leader>r で実行
+  " すべてのtypeに適用するoption
+  " ウィンドウ下部に出力
+  " 出力がなければ自動で閉じる
+  " vimprocで非同期実行
+  let g:quickrun_config = {
+  \   "_" : {
+  \       "outputter/buffer/split" : ":botright",
+  \       "outputter/buffer/close_on_empty" : 1,
+  \       "runner" : "vimproc",
+  \       "runner/vimproc/updatetime" : 10
+  \   },
+  \}
+'''
+[[plugins]] # メソッド定義元へのジャンプ
+repo = 'szw/vim-tags'
+
+# FileType
+## html
+[[plugins]]
+repo = 'mattn/emmet-vim'
+on_ft = ['html', 'erb']
+hook_add = '''
+  " lang
+  let g:user_emmet_settings = {
+        \   'lang' : 'ja'
+        \ }
+  " keymap
+  let g:user_emmet_leader_key='<c-y>'
+'''
+
+## coffee
+[[plugins]]
+repo = 'kchmck/vim-coffee-script'
+on_ft = ['coffee']
+
+## ruby
+[[plugins]]
+repo = 'slim-template/vim-slim'
+on_ft = ['ruby', 'slim']
+[[plugins]]
+repo = 'tpope/vim-rails'
+on_ft = ['ruby']
+hook_add = '''
+  " util function
+  function! s:current_git()
+    return unite#util#path2project_directory(getcwd())
+  endfunction
+  function! s:detect_rails()
+    let root_dir = s:current_git()
+    return !empty(root_dir) && filereadable(root_dir . '/config/environments/development.rb')
+  endfunction
+
+  function! s:load_vim_rails()
+    if s:detect_rails()
+      let root_dir = s:current_git()
+
+      silent doautocmd User Rails
+
+      augroup DetectVimRails
+        autocmd!
+        autocmd BufNew,BufNewFile,BufRead * silent doautocmd User Rails
+      augroup END
+    endif
+  endfunction
+
+  let g:rails_default_file='config/database.yml'
+  let g:rails_level = 4
+  let g:rails_mappings=1
+  let g:rails_modelines=0
+  function! SetUpRailsSetting()
+    nnoremap <buffer><Leader>r :R<CR>
+    nnoremap <buffer><Leader>a :A<CR>
+    nnoremap <buffer><Leader>m :Rmodel<Space>
+    nnoremap <buffer><Leader>c :Rcontroller<Space>
+    nnoremap <buffer><Leader>v :Rview<Space>
+    nnoremap <buffer><Leader>p :Rpreview<CR>
+  endfunction
+  
+  """ unite-rails
+  function! UniteRailsSetting()
+    nnoremap <buffer><C-H><C-H><C-H>  :<C-U>Unite rails/view<CR>
+    nnoremap <buffer><C-H><C-H>       :<C-U>Unite rails/model<CR>
+    nnoremap <buffer><C-H>            :<C-U>Unite rails/controller<CR>
+    nnoremap <buffer><C-H>c           :<C-U>Unite rails/config<CR>
+    nnoremap <buffer><C-H>s           :<C-U>Unite rails/spec<CR>
+    nnoremap <buffer><C-H>m           :<C-U>Unite rails/db -input=migrate<CR>
+    nnoremap <buffer><C-H>l           :<C-U>Unite rails/lib<CR>
+    nnoremap <buffer><expr><C-H>g     ':e '.b:rails_root.'/Gemfile<CR>'
+    nnoremap <buffer><expr><C-H>r     ':e '.b:rails_root.'/config/routes.rb<CR>'
+    nnoremap <buffer><expr><C-H>se    ':e '.b:rails_root.'/db/seeds.rb<CR>'
+    nnoremap <buffer><C-H>ra          :<C-U>Unite rails/rake<CR>
+    nnoremap <buffer><C-H>h           :<C-U>Unite rails/heroku<CR>
+  endfunction
+
+  aug MyAutoCmd
+    au User Rails call SetUpRailsSetting()
+    au User Rails call UniteRailsSetting()
+  aug END
+
+  call s:load_vim_rails()
+'''
+[[plugins]]
+repo = 'basyura/unite-rails'
+on_ft = ['ruby']
+[[plugins]] # if...end など対応する文字を補完する
+repo = 'tpope/vim-endwise'
+on_ft = ['ruby']
+
+## scala
+[[plugins]]
+repo = "derekwyatt/vim-scala"
+on_ft = ['scala']
+
+## markdown
+[[plugins]]
+repo = 'kannokanno/previm'
+on_ft = ['markdown']
+[[plugins]]
+repo = 'tyru/open-browser.vim'
+
+## json
+[[plugins]]
+repo = 'elzr/vim-json'
+on_ft = ['json']
+[[plugins]]
+hook_add = '''
+  let g:vim_json_syntax_conceal = 0
+'''
