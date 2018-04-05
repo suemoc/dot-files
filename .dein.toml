@@ -4,21 +4,11 @@ repo = 'Shougo/dein.vim'
 
 [[plugins]]
 repo = 'Shougo/vimproc.vim'
-hook_post_update = '''
-  if dein#util#_is_windows()
-    let cmd = 'tools\\update-dll-mingw'
-  elseif dein#util#_is_cygwin()
-    let cmd = 'make -f make_cygwin.mak'
-  elseif executable('gmake')
-    let cmd = 'gmake'
-  else
-    let cmd = 'make'
-  endif
-  let g:dein#plugin.build = cmd
-'''
+build = 'make'
 
 [[plugins]]
 repo = 'Shougo/unite.vim'
+depends = 'neomru.vim'
 hook_add = '''
   " start insert mode
   let g:unite_enable_start_insert=1
@@ -311,10 +301,10 @@ hook_add = '''
   function! SetUpRailsSetting()
     nnoremap <buffer><Leader>r :R<CR>
     nnoremap <buffer><Leader>a :A<CR>
-    nnoremap <buffer><Leader>m :Rmodel<Space>
-    nnoremap <buffer><Leader>c :Rcontroller<Space>
-    nnoremap <buffer><Leader>v :Rview<Space>
-    nnoremap <buffer><Leader>p :Rpreview<CR>
+    nnoremap <buffer><Leader>m :Emodel<Space>
+    nnoremap <buffer><Leader>c :Econtroller<Space>
+    nnoremap <buffer><Leader>v :Eview<Space>
+    nnoremap <buffer><Leader>p :Epreview<CR>
   endfunction
   
   """ unite-rails
@@ -363,7 +353,6 @@ repo = 'tyru/open-browser.vim'
 [[plugins]]
 repo = 'elzr/vim-json'
 on_ft = ['json']
-[[plugins]]
 hook_add = '''
   let g:vim_json_syntax_conceal = 0
 '''

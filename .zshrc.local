@@ -6,7 +6,7 @@ alias rm='rmtrash'
 
 alias manga="open -a cooViewer"
 
-alias sikuli="java -Dsikuli.FromCommandLine -jar /Applications/SikuliX-IDE.app/Contents/sikuli-ide.jar -r"
+alias sikuli="/Applications/SikuliX.app/run -r"
 
 alias hdu="du -h -d 1"
 
