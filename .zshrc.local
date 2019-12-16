@@ -1,66 +1,11 @@
-
-#=============================
-## alias
-##=============================
 alias rm='rmtrash'
-
-alias manga="open -a cooViewer"
-
 alias sikuli="/Applications/SikuliX.app/run -r"
 
-alias hdu="du -h -d 1"
-
-alias gv="groovy"
-
-#=============================
-## source z.sh
-##=============================
-
-if [ -f ~/.zsh/z.sh ]; then
-  source ~/.zsh/z.sh
-  precmd() {
-    _z --add "$(pwd -P)"
-  }
-fi
-
-#=============================
-## source auto-fu.zsh
-##=============================
-
-#if [ -f ~/.zsh/auto-fu.zsh ]; then
-#  source ~/.zsh/auto-fu.zsh
-#  function zle-line-init () {
-#    auto-fu-init
-#  }
-#  zle -N zle-line-init
-#  zstyle ':completion:*' completer _oldlist _complete
-#  zstyle ':auto-fu:var' autoable-function/skiplines \
-#    '(scp|svn|java|mount_smbfs|mount_afp) *'
-#fi
-
-# rbenv
-if [[ -d ~/.rbenv ]]; then
-  eval "$(rbenv init -)"
-fi
-
-## rbenv binstubs setting
-export PATH=./vendor/bin:$PATH
-alias be='bundle exec'
-
-# node
-export PATH=$PATH:$HOME/.ndenv/bin
-eval "$(ndenv init -)"
-
-# pyenv
-export PYENV_ROOT="${HOME}/.pyenv"
-export PATH=${PYENV_ROOT}/bin:$PATH
-eval "$(pyenv init -)"
+# anyenv
+eval "$(anyenv init -)"
 
 # direnv
 eval "$(direnv hook zsh)"
-
-# java default version
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
 # macvim
 case ${OSTYPE} in
@@ -134,7 +79,3 @@ bindkey '^f' peco-z-search
 
 alias -g B='`git branch | peco | sed -e "s/^\*[ ]*//g"`'
 alias -g P='| peco'
-
-# ghq
-# alias gg='cd $(ghq root)/$(ghq list | peco)'
-alias ggo='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
